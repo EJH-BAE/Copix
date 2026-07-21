@@ -78,7 +78,6 @@ Install [Ollama](https://ollama.com), and leave it running (`ollama serve` or a 
 - Test if Ollama sync works properly using one of the example prompts.
 
 ## Build
----
 
 **Requirements** : Node.js (`npm`)
 
@@ -90,13 +89,11 @@ Output: `studio\release\Copix-Setup-<version>-x64.exe`
 Running : `Copix.exe`
 
 ## Download
----
 
 Download the latest installer from [Releases](https://github.com/EJH-BAE/Copix/releases).
 Run the downloaded installer (.exe) to install Copix as an app.
 
 ## Run
----
 
 Run the Copix app, or manually run it from the installed directory.
 
