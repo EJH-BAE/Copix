@@ -121,8 +121,8 @@ Run the Copix app, or manually run it from the installed directory.
 
 ## License & Copyright
 
-Copix is a fork of [Code-OSS](https://github.com/microsoft/vscode). 
-Copyright for [Code-OSS](https://github.com/microsoft/vscode) remains in [Microsoft](https://github.com/Microsoft).
+Copix is a fork of [Code-OSS](https://github.com/microsoft/vscode). <br/>
+Copyright for [Code-OSS](https://github.com/microsoft/vscode) remains in [Microsoft](https://github.com/Microsoft). <br/>
 AI functions, components, UI, tool system, etc. are all copyright Bae Juhan.
 
 ## Links
