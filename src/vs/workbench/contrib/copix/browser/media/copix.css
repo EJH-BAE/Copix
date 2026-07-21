@@ -1,0 +1,249 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Copix Contributors. All rights reserved.
+ *  Licensed under the MIT License.
+ *--------------------------------------------------------------------------------------------*/
+
+.copix-root {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	background: var(--copix-bg, var(--vscode-sideBar-background));
+	color: var(--vscode-foreground);
+	font-size: 13px;
+	line-height: 1.5;
+}
+
+.copix-header {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 10px 12px 8px;
+	border-bottom: 1px solid var(--copix-border, var(--vscode-widget-border));
+	flex-shrink: 0;
+}
+
+.copix-header-title {
+	font-weight: 600;
+	font-size: 13px;
+	flex: 1;
+	letter-spacing: 0.01em;
+}
+
+.copix-model-badge {
+	font-size: 11px;
+	color: var(--vscode-descriptionForeground);
+	background: var(--copix-surface, var(--vscode-input-background));
+	border: 1px solid var(--copix-border, var(--vscode-widget-border));
+	border-radius: 6px;
+	padding: 2px 8px;
+	max-width: 160px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.copix-icon-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 28px;
+	height: 28px;
+	border: none;
+	border-radius: 6px;
+	background: transparent;
+	color: var(--vscode-foreground);
+	cursor: pointer;
+	opacity: 0.8;
+}
+
+.copix-icon-btn:hover {
+	background: var(--copix-hover, var(--vscode-toolbar-hoverBackground));
+	opacity: 1;
+}
+
+.copix-messages {
+	flex: 1;
+	overflow-y: auto;
+	padding: 12px 12px 4px;
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+}
+
+.copix-welcome {
+	margin: auto;
+	max-width: 320px;
+	text-align: center;
+	color: var(--vscode-descriptionForeground);
+	padding: 24px 16px;
+}
+
+.copix-welcome-title {
+	font-size: 15px;
+	font-weight: 600;
+	color: var(--vscode-foreground);
+	margin-bottom: 8px;
+}
+
+.copix-welcome-hint {
+	font-size: 12px;
+	line-height: 1.6;
+}
+
+.copix-message {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	max-width: 100%;
+}
+
+.copix-message-user {
+	align-self: flex-end;
+	max-width: 92%;
+}
+
+.copix-message-user .copix-message-body {
+	background: var(--copix-user-bg, var(--vscode-input-background));
+	border: 1px solid var(--copix-border, var(--vscode-widget-border));
+	border-radius: 12px 12px 4px 12px;
+	padding: 10px 12px;
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.copix-message-assistant .copix-message-body {
+	padding: 2px 2px 2px 0;
+	word-break: break-word;
+}
+
+.copix-message-assistant .copix-message-body pre {
+	background: var(--copix-surface, var(--vscode-textCodeBlock-background));
+	border-radius: 8px;
+	padding: 10px 12px;
+	overflow-x: auto;
+	font-size: 12px;
+}
+
+.copix-message-assistant .copix-message-body code {
+	font-family: var(--monaco-monospace-font);
+	font-size: 12px;
+}
+
+.copix-tool-row {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	margin: 2px 0;
+}
+
+.copix-tool-pill {
+	display: inline-flex;
+	align-items: center;
+	align-self: flex-start;
+	gap: 6px;
+	padding: 4px 10px;
+	border-radius: 999px;
+	font-size: 12px;
+	color: var(--vscode-descriptionForeground);
+	background: var(--copix-pill-bg, color-mix(in srgb, var(--vscode-descriptionForeground) 12%, transparent));
+	border: 1px solid var(--copix-border, color-mix(in srgb, var(--vscode-widget-border) 80%, transparent));
+}
+
+.copix-tool-pill.active {
+	animation: copix-shimmer 1.4s ease-in-out infinite;
+}
+
+.copix-tool-pill.done {
+	opacity: 0.72;
+}
+
+.copix-status-line {
+	font-size: 12px;
+	color: var(--vscode-descriptionForeground);
+	padding: 2px 0;
+}
+
+.copix-status-line.active {
+	animation: copix-shimmer 1.4s ease-in-out infinite;
+}
+
+.copix-composer-wrap {
+	flex-shrink: 0;
+	padding: 8px 12px 12px;
+	border-top: 1px solid var(--copix-border, var(--vscode-widget-border));
+	background: var(--copix-bg, var(--vscode-sideBar-background));
+}
+
+.copix-composer {
+	display: flex;
+	flex-direction: column;
+	border: 1px solid var(--copix-border, var(--vscode-widget-border));
+	border-radius: 12px;
+	background: var(--copix-surface, var(--vscode-input-background));
+	box-shadow: 0 1px 2px color-mix(in srgb, var(--vscode-widget-shadow, #000) 8%, transparent);
+	overflow: hidden;
+}
+
+.copix-composer:focus-within {
+	border-color: var(--copix-accent, var(--vscode-focusBorder));
+}
+
+.copix-input {
+	width: 100%;
+	min-height: 72px;
+	max-height: 200px;
+	resize: none;
+	border: none;
+	outline: none;
+	background: transparent;
+	color: var(--vscode-input-foreground);
+	font-family: inherit;
+	font-size: 13px;
+	line-height: 1.5;
+	padding: 12px 12px 4px;
+	box-sizing: border-box;
+}
+
+.copix-composer-footer {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 6px 8px 8px 12px;
+	gap: 8px;
+}
+
+.copix-composer-hint {
+	font-size: 11px;
+	color: var(--vscode-descriptionForeground);
+	opacity: 0.85;
+}
+
+.copix-send-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 32px;
+	height: 32px;
+	border: none;
+	border-radius: 8px;
+	background: var(--copix-accent, var(--vscode-button-background));
+	color: var(--vscode-button-foreground);
+	cursor: pointer;
+	font-size: 12px;
+	font-weight: 600;
+	padding: 0 10px;
+}
+
+.copix-send-btn:disabled {
+	opacity: 0.45;
+	cursor: default;
+}
+
+.copix-send-btn:not(:disabled):hover {
+	filter: brightness(1.06);
+}
+
+@keyframes copix-shimmer {
+	0%, 100% { opacity: 0.55; }
+	50% { opacity: 1; }
+}
