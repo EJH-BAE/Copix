@@ -11,9 +11,7 @@ import { PaymentPage, type PaidPlan } from './components/PaymentPage';
 import { Sidebar } from './components/Sidebar';
 import { StatusBar } from './components/StatusBar';
 import { ToastProvider } from './components/Toast';
-import {
-	loadSessions, newSession, saveSessions, updateSession, clearAllChatData, ChatSession,
-} from './hooks/chatSessions';
+import { loadSessions, newSession, saveSessions, updateSession, clearAllChatData, ChatSession, titleFromMessage } from './hooks/chatSessions';
 import { DEFAULT_SETTINGS, AppSettings, ThemePreference } from './types';
 import { inferWorkspaceEnv } from './models/agentModes';
 import { IconPlus, IconBranch } from './components/Icons';
@@ -22,7 +20,7 @@ import { TitleBarMenu } from './components/TitleBarMenu';
 import { getRemoteSession, isSupabaseConfigured, resolveAuthConfig, type AuthSession } from './services/auth';
 import { pullProfileFromSupabase, pushProfileToSupabase } from './services/supabaseProfile';
 import { COPIX_SUPABASE_ANON_KEY, COPIX_SUPABASE_URL } from './services/supabaseConfig';
-import { collectSessionChanges } from './utils/fileChanges';
+import { collectSessionChanges, type FileChange } from './utils/fileChanges';
 import { getPlan } from './services/subscription';
 
 function resolveTheme(pref: ThemePreference, systemLight: boolean): 'light' | 'dark' {
@@ -62,6 +60,7 @@ function AppInner() {
 	const [hasTunedModel, setHasTunedModel] = useState(false);
 	const [editorVisible, setEditorVisible] = useState(true);
 	const [panelMode, setPanelMode] = useState<SidePanelMode>('hub');
+	const [reviewFiles, setReviewFiles] = useState<FileChange[] | null>(null);
 	const [paletteOpen, setPaletteOpen] = useState(false);
 	const [resolvedTheme, setResolvedTheme] = useState<'light' | 'dark'>(() =>
 		resolveTheme('system', window.matchMedia('(prefers-color-scheme: light)').matches));
@@ -78,6 +77,9 @@ function AppInner() {
 		() => collectSessionChanges(activeSession?.messages ?? []),
 		[activeSession?.messages],
 	);
+	const displayedFileChanges = reviewFiles ?? fileChanges;
+
+	useEffect(() => { setReviewFiles(null); }, [activeSessionId]);
 
 	useEffect(() => { saveSessions(sessions); }, [sessions]);
 
@@ -113,14 +115,25 @@ function AppInner() {
 					apiKey: raw.model?.apiKey ?? '',
 				},
 				layout: { ...DEFAULT_SETTINGS.layout, ...raw.layout },
-				workspace: { ...DEFAULT_SETTINGS.workspace, ...raw.workspace },
+				workspace: {
+					...DEFAULT_SETTINGS.workspace,
+					...raw.workspace,
+					homeDirectory: /copix-output/i.test(raw.workspace?.homeDirectory ?? '')
+						? ''
+						: (raw.workspace?.homeDirectory ?? DEFAULT_SETTINGS.workspace.homeDirectory),
+				},
 				theme: raw.theme ?? DEFAULT_SETTINGS.theme,
 				auth: {
 					...DEFAULT_SETTINGS.auth,
 					...raw.auth,
-					provider: 'supabase',
-					supabaseUrl: COPIX_SUPABASE_URL,
-					supabaseAnonKey: COPIX_SUPABASE_ANON_KEY,
+					supabaseUrl: COPIX_SUPABASE_URL || raw.auth?.supabaseUrl,
+					supabaseAnonKey: COPIX_SUPABASE_ANON_KEY || raw.auth?.supabaseAnonKey,
+					provider: isSupabaseConfigured({
+						...DEFAULT_SETTINGS.auth,
+						...raw.auth,
+						supabaseUrl: COPIX_SUPABASE_URL || raw.auth?.supabaseUrl,
+						supabaseAnonKey: COPIX_SUPABASE_ANON_KEY || raw.auth?.supabaseAnonKey,
+					}) ? 'supabase' : 'local',
 				},
 				subscription: { ...DEFAULT_SETTINGS.subscription, ...raw.subscription },
 				systemPrompt: { ...DEFAULT_SETTINGS.systemPrompt, ...raw.systemPrompt },
@@ -133,6 +146,11 @@ function AppInner() {
 
 	useEffect(() => {
 		const auth = resolveAuthConfig(settings.auth);
+		if (!isSupabaseConfigured(auth)) {
+			setAuthed(true);
+			setAuthReady(true);
+			return;
+		}
 		void getRemoteSession(auth).then(async session => {
 			if (session?.accessToken) await applyAuthSession(session);
 			setAuthReady(true);
@@ -284,6 +302,29 @@ function AppInner() {
 			if (ws) setTree(ws.tree);
 		}
 	};
+
+	const handleSpawnSubagent = useCallback(async (prompt: string, label?: string): Promise<{ sessionId: string }> => {
+		const parent = sessions.find(s => s.id === activeSessionId);
+		const base = newSession();
+		const withWs = parent?.workspaceRoot
+			? { ...base, workspaceRoot: parent.workspaceRoot, workspaceEnv: parent.workspaceEnv }
+			: await ensureWorkspace(base);
+		const session: ChatSession = {
+			...withWs,
+			title: label?.trim() || titleFromMessage(prompt),
+			parentSessionId: parent?.id,
+			pendingPrompt: prompt.trim(),
+			messages: [],
+			tabs: [],
+		};
+		setSessions(prev => [session, ...prev]);
+		setActiveSessionId(session.id);
+		if (session.workspaceRoot) {
+			const ws = await copix.getWorkspace(session.workspaceRoot);
+			if (ws) setTree(ws.tree);
+		}
+		return { sessionId: session.id };
+	}, [sessions, activeSessionId]);
 
 	const ensureActiveSession = useCallback((next: ChatSession[]) => {
 		if (next.some(s => s.id === activeSessionId)) return;
@@ -484,17 +525,21 @@ function AppInner() {
 							setPanelMode('files');
 							void openFile(path);
 						}}
-						onReviewFiles={() => {
+						onReviewFiles={(files) => {
+							setReviewFiles(files);
 							setEditorVisible(true);
 							setPanelMode('changes');
 						}}
+						onSpawnSubagent={handleSpawnSubagent}
+						pendingPrompt={activeSession?.pendingPrompt}
+						onPendingPromptConsumed={() => patchSession(activeSessionId, { pendingPrompt: undefined })}
 					/>
 				}
 				editor={
 					<EditorArea
 						tabs={activeSession?.tabs ?? []}
 						activePath={activeSession?.activePath}
-						fileChanges={fileChanges}
+						fileChanges={displayedFileChanges}
 						mode={panelMode}
 						onModeChange={setPanelMode}
 						onSelect={path => patchSession(activeSessionId, { activePath: path })}

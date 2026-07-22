@@ -28,7 +28,7 @@ import {
 
 } from '../chatActivity';
 
-import { ChatMessage, AppSettings } from '../types';
+import { ChatMessage, AppSettings, type AgentAction } from '../types';
 
 import { titleFromMessage } from '../hooks/chatSessions';
 
@@ -40,6 +40,7 @@ import type { AgentMode } from '../models/agentModes';
 import { AgentErrorCard } from './AgentErrorCard';
 import { UserPromptPill } from './UserPromptPill';
 import { FilesChangedCard, type FileChange } from './FilesChangedCard';
+import { collectFileChanges } from '../utils/fileChanges';
 import { AgentWorkflowCard, liveStatusFromActivities } from './AgentWorkflowCard';
 import { ChatActivityList } from './ChatActivityList';
 
@@ -76,6 +77,12 @@ interface Props {
 	onOpenFile?: (path: string) => void;
 
 	onReviewFiles?: (files: FileChange[]) => void;
+
+	onSpawnSubagent?: (prompt: string, label?: string) => Promise<{ sessionId: string }>;
+
+	pendingPrompt?: string;
+
+	onPendingPromptConsumed?: () => void;
 
 }
 
@@ -125,7 +132,7 @@ function AssistantTurn({
 	const showContent = Boolean(content && content !== '(done)' && !isError);
 
 	const copyReply = () => {
-		if (!content || isError || content === '(done)') return;
+		if (!content || isError || content === '(done)' || !showContent) return;
 		void navigator.clipboard?.writeText(content);
 	};
 
@@ -175,7 +182,7 @@ function AssistantTurn({
 export function ChatCenter({
 
 	sessionId, workspace, settings, messages, onMessagesChange, onWorkspaceChange, onOpenSetup, onOpenSettings,
-	tree = [], onAgentModeChange, onOpenFile, onReviewFiles,
+	tree = [], onAgentModeChange, onOpenFile, onReviewFiles, onSpawnSubagent, pendingPrompt, onPendingPromptConsumed,
 
 }: Props) {
 
@@ -210,6 +217,7 @@ export function ChatCenter({
 	const [starting, setStarting] = useState(false);
 
 	const abortRef = useRef<AbortController | null>(null);
+	const pendingPromptSentRef = useRef(false);
 
 	const listRef = useRef<HTMLDivElement>(null);
 
@@ -294,6 +302,7 @@ export function ChatCenter({
 		autoFollowRef.current = true;
 		setShowScroll(false);
 		setCmdDismissed(false);
+		pendingPromptSentRef.current = false;
 	}, [sessionId]);
 
 	useEffect(() => {
@@ -383,6 +392,8 @@ export function ChatCenter({
 
 		const aid = `a-${Date.now()}`;
 
+		let structuredActions: AgentAction[] | undefined;
+
 
 
 		try {
@@ -391,7 +402,12 @@ export function ChatCenter({
 
 				agentMsg, config,
 
-				{ sessionId, workspaceRoot: workspace, onWorkspaceChange: onWorkspaceChange },
+				{
+					sessionId,
+					workspaceRoot: workspace,
+					onWorkspaceChange: onWorkspaceChange,
+					onSpawnSubagent,
+				},
 
 				messages.map(m => ({ role: m.role, content: m.content })),
 
@@ -451,6 +467,17 @@ export function ChatCenter({
 
 					onStatus: setStatus,
 
+					onStructuredResponse: parsed => {
+						buf = parsed.message;
+						structuredActions = parsed.actions.length ? parsed.actions : undefined;
+						setStreaming(parsed.message);
+					},
+
+					onClearText: () => {
+						buf = '';
+						setStreaming('');
+					},
+
 				},
 
 				{ mode: agentMode, customRules: settings.systemPrompt.customRules },
@@ -474,7 +501,12 @@ export function ChatCenter({
 
 				activities: turnActivities,
 
+				structuredActions,
+
 			}]);
+
+			const changedFiles = collectFileChanges(turnActivities);
+			if (changedFiles.length) onReviewFiles?.(changedFiles);
 
 			setStreaming('');
 
@@ -525,6 +557,15 @@ export function ChatCenter({
 
 
 
+	useEffect(() => {
+		if (!pendingPrompt?.trim() || pendingPromptSentRef.current || running || !workspace || !modelReady) return;
+		pendingPromptSentRef.current = true;
+		onPendingPromptConsumed?.();
+		void send(pendingPrompt);
+	}, [pendingPrompt, running, workspace, modelReady, onPendingPromptConsumed]);
+
+
+
 	const liveStatus = running
 		? (status || liveStatusFromActivities(activities) || 'Working…')
 		: '';
@@ -552,9 +593,12 @@ export function ChatCenter({
 		running &&
 		(activities.length > 0 ||
 			(Boolean(streaming) && !activities.some(a => a.kind === 'think' && a.phase === 'active')));
+	const hasLiveToolWork = activities.some(a => a.kind !== 'think');
 	const liveContent = activities.some(a => a.kind === 'think' && a.phase === 'active')
 		? undefined
-		: streaming || undefined;
+		: hasLiveToolWork
+			? undefined
+			: streaming || undefined;
 
 	return (
 

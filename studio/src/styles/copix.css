@@ -1187,7 +1187,7 @@ body { transition: background-color 0.2s ease, color 0.2s ease; }
 .changes-file-row.active { background: var(--bg-3); }
 .changes-diff-preview {
 	margin: 0 8px 8px 28px;
-	padding: 8px 10px;
+	padding: 0;
 	border-radius: 6px;
 	border: 1px solid var(--border);
 	background: var(--bg-1);
@@ -1195,9 +1195,21 @@ body { transition: background-color 0.2s ease, color 0.2s ease; }
 	font-size: 11px;
 	line-height: 1.45;
 	color: var(--text-2);
-	white-space: pre-wrap;
 	max-height: 160px;
 	overflow: auto;
+}
+.diff-line {
+	padding: 1px 10px;
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+.diff-line.add {
+	background: rgba(74, 222, 128, 0.12);
+	color: #4ade80;
+}
+.diff-line.del {
+	background: rgba(248, 113, 113, 0.12);
+	color: #f87171;
 }
 .changes-diff-preview.large { max-height: 280px; margin: 0; }
 .changes-detail {
@@ -1872,6 +1884,12 @@ body { transition: background-color 0.2s ease, color 0.2s ease; }
 /* Editor */
 .editor-shell { height: 100%; width: 100%; background: var(--bg-0); display: flex; flex-direction: column; min-width: 0; overflow: hidden; }
 .editor-shell > .changes-panel,
+.editor-panel-slot {
+	flex: 1;
+	min-height: 0;
+	display: flex;
+	flex-direction: column;
+}
 .editor-shell > .terminal-panel,
 .editor-shell > .browser-panel,
 .editor-shell > .panel-idle,

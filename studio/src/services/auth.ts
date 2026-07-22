@@ -32,6 +32,11 @@ export function isSupabaseConfigured(config?: AuthConfig): boolean {
 }
 
 export function getSupabase(config?: AuthConfig): SupabaseClient {
+	if (!isSupabaseConfigured(config)) {
+		throw new Error(
+			'Supabase is not configured. Add VITE_COPIX_SUPABASE_URL and VITE_COPIX_SUPABASE_ANON_KEY to studio/.env',
+		);
+	}
 	const resolved = resolveAuthConfig(config);
 	const url = resolved.supabaseUrl!;
 	const key = resolved.supabaseAnonKey!;
@@ -65,6 +70,9 @@ export async function signUpWithEmail(
 	password: string,
 	displayName?: string,
 ): Promise<{ ok: boolean; session?: AuthSession; error?: string }> {
+	if (!isSupabaseConfigured(config)) {
+		return { ok: false, error: 'Cloud sign-up is not configured for this build.' };
+	}
 	const sb = getSupabase(config);
 	const { data, error } = await sb.auth.signUp({
 		email: email.trim(),
@@ -95,6 +103,9 @@ export async function signInWithEmail(
 	email: string,
 	password: string,
 ): Promise<{ ok: boolean; session?: AuthSession; error?: string }> {
+	if (!isSupabaseConfigured(config)) {
+		return { ok: false, error: 'Cloud sign-in is not configured for this build.' };
+	}
 	const sb = getSupabase(config);
 	const { data, error } = await sb.auth.signInWithPassword({
 		email: email.trim(),
@@ -107,10 +118,12 @@ export async function signInWithEmail(
 }
 
 export async function signOut(config?: AuthConfig): Promise<void> {
+	if (!isSupabaseConfigured(config)) return;
 	await getSupabase(config).auth.signOut();
 }
 
 export async function getRemoteSession(config?: AuthConfig): Promise<AuthSession | null> {
+	if (!isSupabaseConfigured(config)) return null;
 	const sb = getSupabase(config);
 	const { data } = await sb.auth.getSession();
 	return sessionFrom(data.session);

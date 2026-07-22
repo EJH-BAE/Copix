@@ -14,6 +14,10 @@ export interface ChatSession {
 	repoUrl?: string;
 	tabs: EditorTab[];
 	activePath?: string;
+	/** Parent agent session when spawned as a subagent. */
+	parentSessionId?: string;
+	/** Auto-run this prompt once when the session opens. */
+	pendingPrompt?: string;
 }
 
 const STORAGE_KEY = 'copix.agents.sessions';

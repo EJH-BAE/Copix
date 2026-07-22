@@ -1,6 +1,9 @@
 import type { AgentMode, WorkspaceEnvironment } from './models/agentModes';
 import type { ChatActivity } from './chatActivity';
+import type { AgentAction } from './models/structuredResponse';
 import { COPIX_SUPABASE_ANON_KEY, COPIX_SUPABASE_URL } from './services/supabaseConfig';
+
+export type { AgentAction, StructuredAgentResponse } from './models/structuredResponse';
 
 export type { AgentMode, WorkspaceEnvironment };
 export type { ChatActivity, ActivityKind, ActivityPhase } from './chatActivity';
@@ -16,6 +19,8 @@ export interface ChatMessage {
 	images?: string[];
 	/** Tool/thinking rows shown above the assistant reply (Cursor-style). */
 	activities?: ChatActivity[];
+	/** Parsed actions from a structured JSON response (for replay / UI). */
+	structuredActions?: AgentAction[];
 }
 
 export interface EditorTab {
@@ -100,11 +105,11 @@ export const DEFAULT_LAYOUT: LayoutSettings = {
 };
 
 export const DEFAULT_WORKSPACE: WorkspaceSettings = {
-	homeDirectory: 'C:/copix-output',
+	homeDirectory: '',
 };
 
 export const DEFAULT_AUTH: AuthConfig = {
-	provider: 'supabase',
+	provider: COPIX_SUPABASE_URL && COPIX_SUPABASE_ANON_KEY ? 'supabase' : 'local',
 	supabaseUrl: COPIX_SUPABASE_URL,
 	supabaseAnonKey: COPIX_SUPABASE_ANON_KEY,
 };

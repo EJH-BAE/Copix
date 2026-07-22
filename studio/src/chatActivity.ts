@@ -3,7 +3,7 @@
 import type { LineDiffStats } from './utils/lineDiff';
 import { looksLikeSecret } from './utils/secrets';
 
-export type ActivityKind = 'read' | 'edit' | 'search' | 'think' | 'run' | 'list' | 'create' | 'multitask';
+export type ActivityKind = 'read' | 'edit' | 'search' | 'think' | 'run' | 'list' | 'create' | 'multitask' | 'subagent';
 
 export type ActivityPhase = 'active' | 'done';
 
@@ -86,6 +86,7 @@ const TOOL_KIND: Record<string, ActivityKind> = {
 	list_dir: 'list',
 	create_project: 'create',
 	multitask: 'multitask',
+	spawn_subagent: 'subagent',
 };
 
 export function toolToKind(tool: string): ActivityKind {
@@ -108,6 +109,8 @@ export function extractTarget(tool: string, args: Record<string, unknown>): stri
 			return args.name ? String(args.name) : undefined;
 		case 'multitask':
 			return args.summary ? truncate(String(args.summary), 48) : 'parallel tasks';
+		case 'spawn_subagent':
+			return args.label ? truncate(String(args.label), 48) : 'subagent';
 		default:
 			return undefined;
 	}
@@ -186,6 +189,10 @@ export function formatActivityDisplay(activity: ChatActivity): ActivityDisplay {
 			return activity.phase === 'active'
 				? { verb: 'Multitasking', target, ellipsis: true }
 				: { verb: 'Multitasked', target };
+		case 'subagent':
+			return activity.phase === 'active'
+				? { verb: 'Spawning subagent', target, ellipsis: true }
+				: { verb: 'Spawned subagent', target };
 		default:
 			return { verb: activity.phase === 'active' ? 'Working' : 'Done', target, ellipsis: activity.phase === 'active' };
 	}

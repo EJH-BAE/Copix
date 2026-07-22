@@ -546,17 +546,22 @@ async function runModelSetupPipeline(_epochs: unknown = 3): Promise<SetupResult>
 	}
 }
 
-const DEFAULT_OUTPUT_ROOT = 'C:/copix-output';
 const configPath = () => path.join(app.getPath('userData'), 'copix-config.json');
+
+function defaultUserProjectsRoot(): string {
+	return app.getPath('home');
+}
 
 function readWorkspaceHome(): string {
 	try {
 		const raw = fsSync.readFileSync(configPath(), 'utf8');
 		const settings = JSON.parse(raw) as { workspace?: { homeDirectory?: string } };
 		const home = settings.workspace?.homeDirectory?.trim();
-		if (home) return path.normalize(home);
+		if (home && !/copix-output/i.test(home.replace(/\\/g, '/'))) {
+			return path.normalize(home);
+		}
 	} catch { /* use default */ }
-	return path.normalize(DEFAULT_OUTPUT_ROOT);
+	return path.normalize(defaultUserProjectsRoot());
 }
 
 const projectsRoot = () => readWorkspaceHome();
@@ -572,7 +577,7 @@ function slugify(name: string): string {
 }
 
 function agentsDir(): string {
-	return path.join(projectsRoot(), 'agents');
+	return path.join(app.getPath('userData'), 'agent-workspaces');
 }
 
 async function listTree(dir: string, max = 800): Promise<string[]> {

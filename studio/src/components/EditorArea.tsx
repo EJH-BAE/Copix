@@ -209,6 +209,7 @@ export function EditorArea({
 			{mode === 'changes' && (
 				<ChangesPanel
 					files={fileChanges}
+					workspace={workspace}
 					selectedPath={activePath}
 					onOpenFile={path => {
 						void onOpenFile(path);
@@ -217,7 +218,12 @@ export function EditorArea({
 				/>
 			)}
 
-			{mode === 'terminal' && <TerminalPanel workspace={workspace} />}
+			<div
+				className="editor-panel-slot terminal-panel-slot"
+				style={{ display: mode === 'terminal' ? 'flex' : 'none' }}
+			>
+				<TerminalPanel workspace={workspace} />
+			</div>
 
 			{mode === 'browser' && (
 				<div className="browser-panel">
