@@ -1,24 +1,28 @@
-﻿# Copix public site
+# Copix public site
 
-Static marketing site for https://github.com/EJH-BAE/Copix
+Marketing site for https://github.com/EJH-BAE/Copix
 
-**Live URL:** https://ejh-bae.github.io/Copix/
+**Live:** https://ejh-bae.github.io/Copix/
 
-## Enable GitHub Pages (required once)
+## Features
 
-Open **Settings → Pages** on the repo and use **one** of these:
+- Pretendard + IBM Plex Mono (English / Korean)
+- Automatic light / dark theme via `prefers-color-scheme`
+- EN / 한국어 language toggle
 
-### Option A — Deploy from branch (simplest)
+## Develop
 
-1. Source: **Deploy from a branch**
-2. Branch: **`public_site`** / folder **`/ (root)`**
-3. Save
+```powershell
+cd app
+npm install
+npm run dev
+```
 
-### Option B — GitHub Actions
+## Build & publish
 
-1. Source: **GitHub Actions**
-2. Open **Settings → Environments → github-pages**
-3. Under **Deployment branches**, allow **`public_site`** (or “All branches”)
-4. Re-run the **Deploy GitHub Pages** workflow
-
-This branch contains only the built static files (`index.html`, `assets/`, `.nojekyll`).
+```powershell
+cd app
+$env:GITHUB_PAGES='true'
+npm run build
+# copy dist → branch root, then commit
+```
