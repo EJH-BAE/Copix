@@ -11,8 +11,7 @@
 <p align="center">
 
 <img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT">
-<img src="https://github.com/EJH-BAE/Copix/actions/workflows/telemetry.yml/badge.svg" alt="Telemetry">
-<img src="https://github.com/EJH-BAE/Copix/actions/workflows/chat-lib-package.yml/badge.svg" alt="chat-lib tests">
+<img src="https://github.com/EJH-BAE/Copix/actions/workflows/dependabot/dependabot-updates/badge.svg" alt="dependabot-updates">
 </p>
 
 <img width="2559" height="1599" alt="image" src="https://github.com/user-attachments/assets/65814236-00f3-4e22-8d7d-c1fbd4a4c60e" />
