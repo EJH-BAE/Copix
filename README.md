@@ -23,7 +23,7 @@
 | [`macOS/`](macOS/) | macOS (Apple Silicon / Intel) | `cd macOS/studio && ./scripts/build-mac.sh` |
 | [`Windows/`](Windows/) | Windows x64 | `cd Windows/studio && powershell -ExecutionPolicy Bypass -File .\scripts\build-windows-installer.ps1` |
 
-### macOS (`/Users/baejuhan`)
+### macOS
 See [macOS/README.md](macOS/README.md). Output: `macOS/studio/release/Copix-*-mac-*.dmg`
 
 ### Windows
