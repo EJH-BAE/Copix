@@ -4,7 +4,7 @@
 
 <h1 align="center">Copix</h1>
 <p align="center">
-	<strong>Fast. Essential. Precise.</strong><br/>
+	<strong>Fast. Efficient. Precise.</strong><br/>
 	Turn anything you want into real, high-quality code.
 </p>
 
