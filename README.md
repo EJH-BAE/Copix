@@ -32,14 +32,14 @@ See [Windows/README.md](Windows/README.md). Output: `Windows/studio/release/Copi
 
 ## Settings (`~/Copix/settings.json`)
 
-Copix has **no accounts**. Preferences are stored locally in:
+Copix has **no accounts** and **no in-app settings screen**. Preferences are stored locally in:
 
 | OS | Path |
 | :-- | :-- |
 | macOS | `/Users/<you>/Copix/settings.json` (e.g. `/Users/{username}/Copix/settings.json`) |
 | Windows | `C:\Users\<you>\Copix\settings.json` |
 
-The app creates the `Copix` folder and file when you change Settings. Editing models, theme, workspace home, or agent mode updates this file; restarting Copix reloads it.
+The app creates the `Copix` folder and file on first launch. Edit `settings.json` directly, then restart Copix to apply changes.
 
 Example:
 
@@ -65,7 +65,7 @@ Example:
 | `agentMode` | Default agent mode (`plan`, `code`, `debug`, `terminal`) |
 | `layout` | Sidebar / editor panel widths |
 
-Prefer using **Settings** in the app; hand-editing the JSON is optional.
+Prefer editing **~/Copix/settings.json** directly; there is no settings menu in the app.
 
 ## License & Copyright
 
