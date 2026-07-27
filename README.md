@@ -21,7 +21,7 @@
 
 | Folder | Platform | Build |
 | :-- | :-- | :-- |
-| [`macOS/`](macOS/) | macOS (Apple Silicon / Intel) | `cd macOS/studio && ./scripts/build-mac.sh` |
+| [`macOS/`](macOS/) | macOS (Apple Silicon / Intel) | `cd macOS && ./tools/build-mac.sh` |
 | [`Windows/`](Windows/) | Windows x64 | `cd Windows/studio && powershell -ExecutionPolicy Bypass -File .\scripts\build-windows-installer.ps1` |
 
 ### macOS (`/Users/{username}`)
