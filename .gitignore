@@ -12,6 +12,8 @@ studio/dist-electron/
 studio/release/staging/
 studio/release/*.exe
 studio/release/*.blockmap
+studio/release/*.dmg
+studio/release/*.zip
 studio/.env
 studio/copix-core/.venv/
 studio/copix-core/output/
@@ -22,6 +24,10 @@ studio/copix-cloud/.env
 # Large binaries — ship via GitHub Releases, not git
 /Copix.exe
 *.exe.blockmap
+*.dmg
+*.zip
+!package-lock.json
+!**/package-lock.json
 
 # Local IDE
 .cursor/

@@ -473,6 +473,7 @@ export function SettingsPage({
 					{nav === 'workspace' && (
 						<section className="settings-block">
 							<label className="field-label">Home directory</label>
+							<p className="settings-hint">Where new projects are created (macOS: /Users/baejuhan).</p>
 							<div className="field-row">
 								<input
 									className="field-input"
@@ -481,6 +482,7 @@ export function SettingsPage({
 										...settings,
 										workspace: { homeDirectory: e.target.value },
 									})}
+									placeholder="/Users/baejuhan"
 								/>
 								<button
 									type="button"

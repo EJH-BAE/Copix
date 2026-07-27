@@ -1,6 +1,6 @@
 /**
  * Prepare release/staging before electron-builder.
- * Avoids failures when an old release/win-unpacked folder is locked (e.g. Copix still running).
+ * Avoids failures when an old unpacked folder is locked (e.g. Copix still running).
  */
 import { existsSync, rmSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
@@ -11,12 +11,21 @@ const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const staging = path.join(root, 'release', 'staging');
 const legacyUnpacked = path.join(root, 'release', 'win-unpacked');
 
-function kill(name) {
+function killWindows(name) {
 	spawnSync('taskkill', ['/F', '/IM', name, '/T'], { shell: true, stdio: 'ignore' });
 }
 
-kill('Copix.exe');
-kill('electron.exe');
+function killUnix(pattern) {
+	spawnSync('pkill', ['-f', pattern], { stdio: 'ignore' });
+}
+
+if (process.platform === 'win32') {
+	killWindows('Copix.exe');
+	killWindows('electron.exe');
+} else {
+	killUnix('Copix.app');
+	killUnix('[e]lectron');
+}
 
 function tryRemove(dir) {
 	if (!existsSync(dir)) return true;

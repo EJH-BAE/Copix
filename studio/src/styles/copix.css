@@ -244,6 +244,9 @@ body { transition: background-color 0.2s ease, color 0.2s ease; }
 	border-bottom: 1px solid var(--border);
 	-webkit-app-region: drag;
 }
+body.platform-darwin .titlebar {
+	padding-left: 78px; /* room for macOS traffic lights */
+}
 .titlebar-logo {
 	width: 18px;
 	height: 18px;

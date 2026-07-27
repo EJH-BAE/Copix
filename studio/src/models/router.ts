@@ -6,6 +6,7 @@ import { buildSystemPrompt } from './systemPrompt.js';
 import { actionToTool, parseStructuredResponse, type StructuredAgentResponse } from './structuredResponse.js';
 import { computeLineDiff, truncateText } from '../utils/lineDiff.js';
 import { assertSafeFilePath } from '../utils/secrets.js';
+import { isWindows, projectPathExample, shellLabel } from '../utils/platform.js';
 
 export interface AgentContext {
 	sessionId: string;
@@ -29,7 +30,7 @@ Scaffold a new git-initialized project folder.
 
 **When to use:** User asks for a new app, site, or repo from scratch.
 
-**Output location:** \`C:/Users/<you>/<kebab-name>\` unless \`outputPath\` is set.
+**Output location:** \`${projectPathExample('<kebab-name>')}\` unless \`outputPath\` is set.
 
 **Parameters:**
 - \`name\` (required) — kebab-case project name you generate
@@ -186,14 +187,14 @@ List files and folders in a directory.
 		function: {
 			name: 'run_terminal',
 			description: `## run_terminal
-Execute a PowerShell command on the user's machine.
+Execute a ${shellLabel()} command on the user's machine.
 
 **When to use:** Build, test, install packages, run scripts.
 
 **Parameters:**
 - \`command\` (required)
 - \`cwd\` — working directory (defaults to workspace)
-- \`elevate\` — \`true\` for Administrator / UAC (installs, system paths)`,
+- \`elevate\` — \`true\` for ${isWindows() ? 'Administrator / UAC' : 'administrator / sudo'} (installs, system paths)`,
 			parameters: {
 				type: 'object',
 				properties: {
@@ -201,7 +202,9 @@ Execute a PowerShell command on the user's machine.
 					cwd: { type: 'string' },
 					elevate: {
 						type: 'boolean',
-						description: 'Run elevated as Administrator (Windows UAC prompt)',
+						description: isWindows()
+							? 'Run elevated as Administrator (Windows UAC prompt)'
+							: 'Run elevated with administrator privileges (macOS auth prompt / sudo)',
 					},
 				},
 				required: ['command'],
@@ -369,7 +372,7 @@ async function executeTool(
 
 function needsElevateHint(command: string): boolean {
 	const c = command.toLowerCase();
-	return /\b(sudo|runas|pkexec|bcdedit|dism\s|reg\s+add|takeown|icacls|winget\s+install|choco\s+install|install-windowsfeature)\b/.test(c);
+	return /\b(sudo|runas|pkexec|bcdedit|dism\s|reg\s+add|takeown|icacls|winget\s+install|choco\s+install|install-windowsfeature|brew\s+install|installer\s+-pkg)\b/.test(c);
 }
 
 async function executeStructuredActions(

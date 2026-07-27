@@ -39,6 +39,9 @@ function bootstrap() {
 		console.error('[copix] window.copix is missing — preload script did not expose the API');
 	}
 
+	const platform = window.copix?.getPlatform?.() ?? window.copix?.platform ?? 'win32';
+	document.body.classList.add(`platform-${platform}`);
+
 	console.log('[copix] Mounting React app');
 	createRoot(rootEl).render(
 		<StrictMode>

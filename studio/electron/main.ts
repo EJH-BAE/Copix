@@ -22,10 +22,14 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 function resolveAppIcon(): string | undefined {
 	const candidates = app.isPackaged
-		? [process.execPath]
+		? [
+			path.join(process.resourcesPath, 'icon.png'),
+			process.execPath,
+		]
 		: [
-			path.join(__dirname, '..', 'build', 'icon.ico'),
+			path.join(__dirname, '..', 'build', 'icon.icns'),
 			path.join(__dirname, '..', 'build', 'icon.png'),
+			path.join(__dirname, '..', 'build', 'icon.ico'),
 		];
 	for (const candidate of candidates) {
 		if (fsSync.existsSync(candidate)) {
@@ -276,12 +280,17 @@ async function pullModelInternal(model: string): Promise<{ ok: boolean; message:
 }
 
 async function runSetupInternal(): Promise<SetupResult> {
-	const setup = path.join(coreRoot(), 'setup.ps1');
+	const setupSh = path.join(coreRoot(), 'setup.sh');
+	const setupPs1 = path.join(coreRoot(), 'setup.ps1');
+	const useShell = process.platform !== 'win32';
+	const setup = useShell ? setupSh : setupPs1;
 	if (!fsSync.existsSync(setup)) {
-		return failStep('installing_deps', 'setup.ps1 not found', { errorType: 'FileNotFoundError' });
+		return failStep('installing_deps', path.basename(setup) + ' not found', { errorType: 'FileNotFoundError' });
 	}
 	return new Promise(resolve => {
-		const proc = spawn('powershell', ['-ExecutionPolicy', 'Bypass', '-File', setup], { cwd: coreRoot(), shell: true });
+		const proc = useShell
+			? spawn('bash', [setup], { cwd: coreRoot(), shell: false })
+			: spawn('powershell', ['-ExecutionPolicy', 'Bypass', '-File', setup], { cwd: coreRoot(), shell: true });
 		let out = '';
 		proc.stdout?.on('data', d => { out += d; });
 		proc.stderr?.on('data', d => { out += d; });
@@ -289,7 +298,7 @@ async function runSetupInternal(): Promise<SetupResult> {
 			if (code === 0) resolve({ ok: true, message: 'Setup complete' });
 			else {
 				const detail = tailOutput(out);
-				const message = detail || `setup.ps1 exited with code ${code}`;
+				const message = detail || `${path.basename(setup)} exited with code ${code}`;
 				resolve(failStep('installing_deps', message, {
 					errorType: inferErrorType(message),
 					detail,
@@ -628,18 +637,25 @@ function needsAdminConfirmation(command: string): boolean {
 		/install-windowsfeature/,
 		/choco\s+install/,
 		/winget\s+install/,
+		/brew\s+install/,
+		/installer\s+-pkg/,
+		/dscl\s+/,
+		/launchctl\s+load/,
 	];
 	return patterns.some(p => p.test(c));
 }
 
 async function confirmElevated(command: string): Promise<boolean> {
+	const isMac = process.platform === 'darwin';
 	const result = await dialog.showMessageBox(mainWindow!, {
 		type: 'warning',
 		buttons: ['Cancel', 'Allow'],
 		defaultId: 0,
 		cancelId: 0,
 		title: 'Administrator access',
-		message: 'Copix wants to run this command as Administrator.',
+		message: isMac
+			? 'Copix wants to run this command with administrator privileges.'
+			: 'Copix wants to run this command as Administrator.',
 		detail: command,
 	});
 	return result.response === 1;
@@ -749,6 +765,7 @@ function createWindow(): void {
 	}
 
 	const appIcon = loadAppIcon();
+	const isMac = process.platform === 'darwin';
 	mainWindow = new BrowserWindow({
 		width: 1600,
 		height: 940,
@@ -757,8 +774,10 @@ function createWindow(): void {
 		title: 'Copix',
 		...(appIcon ? { icon: appIcon } : {}),
 		backgroundColor: '#0f0f10',
-		titleBarStyle: 'hidden',
-		titleBarOverlay: { color: '#0f0f10', symbolColor: '#ccc', height: 36 },
+		titleBarStyle: isMac ? 'hiddenInset' : 'hidden',
+		...(isMac
+			? { trafficLightPosition: { x: 14, y: 12 } }
+			: { titleBarOverlay: { color: '#0f0f10', symbolColor: '#ccc', height: 36 } }),
 		show: false,
 		webPreferences: {
 			preload: preloadPath,
@@ -766,8 +785,11 @@ function createWindow(): void {
 			nodeIntegration: false,
 		},
 	});
-	if (appIcon) {
+	if (appIcon && !isMac) {
 		mainWindow.setIcon(appIcon);
+	}
+	if (isMac && appIcon && app.dock) {
+		app.dock.setIcon(appIcon);
 	}
 
 	attachRendererLogging(mainWindow);
@@ -947,6 +969,7 @@ function looksLikeSecretPath(filePath: string): boolean {
 		}
 		const workDir = cwd ? resolvePath(cwd, workspaceRoot) : (workspaceRoot ?? process.cwd());
 		const isWin = process.platform === 'win32';
+		const isMac = process.platform === 'darwin';
 		const streamChannel = streamId ? `copix:terminal:${streamId}` : undefined;
 		const emit = (chunk: string) => {
 			if (streamChannel && chunk) event.sender.send(streamChannel, chunk);
@@ -966,6 +989,33 @@ function looksLikeSecretPath(filePath: string): boolean {
 					`Start-Process -FilePath powershell.exe -Verb RunAs -Wait -WindowStyle Hidden `
 					+ `-ArgumentList '-NoLogo','-NoProfile','-Command',${JSON.stringify(inner)}`,
 				]);
+				let out = '';
+				proc.stdout?.on('data', d => { const s = d.toString(); out += s; emit(s); });
+				proc.stderr?.on('data', d => { const s = d.toString(); out += s; emit(s); });
+				proc.on('error', err => resolve(err.message));
+				proc.on('close', async () => {
+					try {
+						const fileOut = await fs.readFile(outFile, 'utf8');
+						await fs.unlink(outFile).catch(() => undefined);
+						const combined = (fileOut || out).trim();
+						if (streamChannel && fileOut && !out.includes(fileOut)) emit(fileOut);
+						resolve(combined || '(elevated command finished)');
+					} catch {
+						resolve(out.trim() || '(elevated command finished — output unavailable)');
+					}
+				});
+				setTimeout(() => { proc.kill(); resolve(out.trim() || '(timeout 120s)'); }, 120_000);
+				return;
+			}
+			if (isMac && wantsElevate) {
+				const outFile = path.join(os.tmpdir(), `copix-elev-${Date.now()}.txt`);
+				const script = [
+					`cd ${JSON.stringify(workDir)} || exit 1`,
+					`{ ${command} ; } >${JSON.stringify(outFile)} 2>&1`,
+				].join('\n');
+				const appleScript =
+					`do shell script ${JSON.stringify(`bash -lc ${JSON.stringify(script)}`)} with administrator privileges`;
+				const proc = spawn('osascript', ['-e', appleScript]);
 				let out = '';
 				proc.stdout?.on('data', d => { const s = d.toString(); out += s; emit(s); });
 				proc.stderr?.on('data', d => { const s = d.toString(); out += s; emit(s); });
@@ -1064,6 +1114,11 @@ function looksLikeSecretPath(filePath: string): boolean {
 	ipcMain.handle('copix:getSetupProgress', () => currentSetup);
 
 	createWindow();
+});
+
+app.on('activate', () => {
+	if (BrowserWindow.getAllWindows().length === 0) createWindow();
+	else mainWindow?.show();
 });
 
 app.on('window-all-closed', () => {

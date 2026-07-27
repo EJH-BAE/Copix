@@ -54,6 +54,9 @@ export interface ServerStatus {
 }
 
 const api = {
+	/** Host OS: darwin | win32 | linux */
+	platform: process.platform as NodeJS.Platform,
+	getPlatform: () => process.platform as NodeJS.Platform,
 	getProjectsRoot: () => ipcRenderer.invoke('copix:getProjectsRoot') as Promise<string>,
 	browseHomeDirectory: () => ipcRenderer.invoke('copix:browseHomeDirectory') as Promise<string | undefined>,
 	createSessionWorkspace: (sessionId: string) => ipcRenderer.invoke('copix:createSessionWorkspace', sessionId),

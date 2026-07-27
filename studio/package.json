@@ -2,7 +2,7 @@
   "name": "copix",
   "version": "4.1.0",
   "private": true,
-  "description": "Copix — official AI IDE for Windows",
+  "description": "Copix — official AI IDE for Windows and macOS",
   "author": "EJH-BAE",
   "license": "MIT",
   "homepage": "https://github.com/EJH-BAE/Copix",
@@ -18,8 +18,11 @@
     "studio": "vite",
     "studio:test": "npm run build && node scripts/check-build.mjs && electron .",
     "studio:app": "npm run dist:dir && start release\\staging\\win-unpacked\\Copix.exe",
+    "studio:app:mac": "npm run dist:mac:dir && open release/staging/mac*/Copix.app",
     "dist": "node scripts/pre-dist.mjs && vite build && electron-builder --win nsis && node scripts/post-dist.mjs",
-    "dist:dir": "node scripts/pre-dist.mjs && vite build && electron-builder --win dir && node scripts/post-dist.mjs"
+    "dist:dir": "node scripts/pre-dist.mjs && vite build && electron-builder --win dir && node scripts/post-dist.mjs",
+    "dist:mac": "node scripts/pre-dist.mjs && vite build && electron-builder --mac dmg zip && node scripts/post-dist.mjs",
+    "dist:mac:dir": "node scripts/pre-dist.mjs && vite build && electron-builder --mac dir && node scripts/post-dist.mjs"
   },
   "dependencies": {
     "@fontsource-variable/nunito": "^5.2.7",
@@ -89,6 +92,35 @@
       "publisherName": "EJH-BAE",
       "signAndEditExecutable": false,
       "verifyUpdateCodeSignature": false
+    },
+    "mac": {
+      "category": "public.app-category.developer-tools",
+      "icon": "build/icon.png",
+      "artifactName": "Copix-${version}-mac-${arch}.${ext}",
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "arm64",
+            "x64"
+          ]
+        },
+        {
+          "target": "zip",
+          "arch": [
+            "arm64",
+            "x64"
+          ]
+        }
+      ],
+      "hardenedRuntime": true,
+      "gatekeeperAssess": false,
+      "entitlements": "build/entitlements.mac.plist",
+      "entitlementsInherit": "build/entitlements.mac.plist"
+    },
+    "dmg": {
+      "title": "Copix ${version}",
+      "artifactName": "Copix-${version}-mac-${arch}.${ext}"
     },
     "nsis": {
       "oneClick": false,
