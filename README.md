@@ -16,7 +16,7 @@
 
 ---
 
-## Platforms
+## Build
 
 | Folder | Platform | Build |
 | :-- | :-- | :-- |
