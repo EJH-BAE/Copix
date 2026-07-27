@@ -73,15 +73,59 @@ ollama pull gpt-oss:120b  #120b model - only for more quality (not recommended)
 Install [Ollama](https://ollama.com), and leave it running (`ollama serve` or a minimized window), then open Copix.
 
 ### 2. First session in Copix
-- Set up preferences in the settings menu (saved to `~/Copix/settings.json`)
-- See **Recommended Preferences** below
+- Open **Settings** and set models, theme, and home directory (no login)
+- Preferences are written to `/Users/baejuhan/Copix/settings.json`
+- See **Settings file** and **Recommended settings** below
 - Test if Ollama sync works properly using one of the example prompts.
+
+## Settings file
+
+Copix stores all preferences locally (no accounts):
+
+**Path:** `/Users/baejuhan/Copix/settings.json` (same as `~/Copix/settings.json`)
+
+The folder and file are created the first time you change Settings. Changing models, theme, workspace home, agent mode, or rules updates this file; quitting and reopening Copix reloads it.
+
+```json
+{
+  "model": {
+    "provider": "local",
+    "endpoint": "http://127.0.0.1:11434/v1",
+    "apiKey": "",
+    "modelId": "gpt-oss:20b",
+    "tunedModelId": "copix-core",
+    "preferTuned": false,
+    "trainingDataPath": "",
+    "lowVram": false
+  },
+  "layout": { "sidebarWidth": 220, "editorWidth": 420 },
+  "workspace": { "homeDirectory": "/Users/baejuhan" },
+  "theme": "system",
+  "agentMode": "code",
+  "systemPrompt": { "customRules": [] },
+  "modelSetup": { "completed": false, "skipped": false }
+}
+```
+
+| Key | Settings UI | Meaning |
+| :-- | :-- | :-- |
+| `model.modelId` | Models → Base model | Ollama model tag (e.g. `gpt-oss:20b`) |
+| `model.preferTuned` | Models → Prefer Copix Core | Use `copix-core` when available |
+| `model.lowVram` | Models → Low VRAM mode | Smaller context for low-memory Macs |
+| `workspace.homeDirectory` | Workspace → Home directory | Where `create_project` puts new repos |
+| `theme` | Appearance | `system` \| `dark` \| `light` |
+| `agentMode` | Agents | Default mode for new chats |
+| `systemPrompt.customRules` | Rules | Extra lines in the agent system prompt |
+| `layout` | Workspace (widths) | Sidebar / editor panel sizes |
+| `modelSetup` | (wizard) | First-run setup completed / skipped |
+
+Use the in-app Settings screen; hand-editing JSON is optional.
 
 ## Build
 
 **Requirements:** macOS + Node.js (`npm`)
 
-Copix is a **macOS-only** app (built for `/Users/baejuhan`).
+Copix macOS build (for `/Users/baejuhan`):
 
 ```bash
 cd studio
@@ -97,7 +141,7 @@ cd studio && npm install && npm run dist
 Output: `studio/release/Copix-<version>-mac-arm64.dmg` (Apple Silicon) and/or `…-mac-x64.dmg` (Intel)  
 Running: open `Copix.app`, or drag it to Applications
 
-Recommended home directory in Settings: `/Users/baejuhan`
+Recommended `workspace.homeDirectory`: `/Users/baejuhan`
 
 ## Download
 
@@ -108,25 +152,25 @@ Open the `.dmg` and drag Copix to Applications.
 
 Open Copix from Applications (or the unpacked `.app`).
 
-## Recommended Preferences
+## Recommended settings
+
+Values below map to keys in `settings.json`.
 
 ### Models
----
 
-| Preferences | Recommended | 
-| :--: | :-- |
-| Model | `gpt-oss:20b` (Ollama or Cloud) |
-| Copix Core Preference | `Unabled` |
-| Low VRAM Mode | `Unabled` (for low-performance computers, use `Enabled`) |
-| Copix Core Train / Setup | `Unabled` |
+| Setting | `settings.json` | Recommended |
+| :-- | :-- | :-- |
+| Model | `model.modelId` | `gpt-oss:20b` (Ollama or Cloud) |
+| Prefer Copix Core | `model.preferTuned` | `false` |
+| Low VRAM Mode | `model.lowVram` | `false` (use `true` on low-memory machines) |
+| Model setup wizard | `modelSetup` | skip / leave incomplete unless you want to train |
 
 ### Workspace & Agents
----
 
-| Preferences | Recommended | 
-| :--: | :-- |
-| Home Directory | `/Users/baejuhan` |
-| Default Agent Mode | `Code` |
+| Setting | `settings.json` | Recommended |
+| :-- | :-- | :-- |
+| Home Directory | `workspace.homeDirectory` | `/Users/baejuhan` |
+| Default Agent Mode | `agentMode` | `code` |
 
 
 
