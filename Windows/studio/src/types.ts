@@ -1,7 +1,6 @@
 import type { AgentMode, WorkspaceEnvironment } from './models/agentModes';
 import type { ChatActivity } from './chatActivity';
 import type { AgentAction } from './models/structuredResponse';
-import { COPIX_SUPABASE_ANON_KEY, COPIX_SUPABASE_URL } from './services/supabaseConfig';
 
 export type { AgentAction, StructuredAgentResponse } from './models/structuredResponse';
 
@@ -27,27 +26,6 @@ export interface EditorTab {
 	path: string;
 	content: string;
 	dirty: boolean;
-}
-
-export interface CopixAccount {
-	id: string;
-	displayName: string;
-	email?: string;
-	password?: string;
-	createdAt: number;
-}
-
-export type SubscriptionPlan = 'free' | 'pro' | 'max';
-
-export interface SubscriptionSettings {
-	plan: SubscriptionPlan;
-	status: 'active' | 'inactive' | 'trial';
-}
-
-export interface AuthConfig {
-	provider: 'local' | 'supabase';
-	supabaseUrl?: string;
-	supabaseAnonKey?: string;
 }
 
 export interface SystemPromptSettings {
@@ -76,7 +54,7 @@ export interface ModelSettings {
 	tunedModelId: string;
 	preferTuned: boolean;
 	trainingDataPath: string;
-	/** Safer local inference: smaller context, fewer GPU layers (helps 8GB VRAM / CUDA crashes). */
+	/** Safer local inference: smaller context, fewer GPU layers. */
 	lowVram?: boolean;
 }
 
@@ -85,16 +63,13 @@ export interface ModelSetupSettings {
 	skipped: boolean;
 }
 
+/** Local app settings — persisted to ~/Copix/settings.json */
 export interface AppSettings {
-	activeAccountId: string;
-	accounts: CopixAccount[];
 	model: ModelSettings;
 	layout: LayoutSettings;
 	workspace: WorkspaceSettings;
 	theme: ThemePreference;
 	agentMode: AgentMode;
-	auth: AuthConfig;
-	subscription: SubscriptionSettings;
 	systemPrompt: SystemPromptSettings;
 	modelSetup: ModelSetupSettings;
 }
@@ -108,17 +83,6 @@ export const DEFAULT_WORKSPACE: WorkspaceSettings = {
 	homeDirectory: '',
 };
 
-export const DEFAULT_AUTH: AuthConfig = {
-	provider: COPIX_SUPABASE_URL && COPIX_SUPABASE_ANON_KEY ? 'supabase' : 'local',
-	supabaseUrl: COPIX_SUPABASE_URL,
-	supabaseAnonKey: COPIX_SUPABASE_ANON_KEY,
-};
-
-export const DEFAULT_SUBSCRIPTION: SubscriptionSettings = {
-	plan: 'free',
-	status: 'inactive',
-};
-
 export const DEFAULT_SYSTEM_PROMPT: SystemPromptSettings = {
 	customRules: [],
 };
@@ -129,7 +93,6 @@ export const DEFAULT_MODEL: ModelSettings = {
 	apiKey: '',
 	modelId: 'gpt-oss:20b',
 	tunedModelId: 'copix-core',
-	// Prefer Copix Core when registered in Ollama; otherwise fall back to modelId.
 	preferTuned: true,
 	trainingDataPath: '',
 	lowVram: false,
@@ -143,19 +106,11 @@ export const DEFAULT_MODEL_SETUP: ModelSetupSettings = {
 };
 
 export const DEFAULT_SETTINGS: AppSettings = {
-	activeAccountId: 'default',
-	accounts: [{
-		id: 'default',
-		displayName: 'Local user',
-		createdAt: Date.now(),
-	}],
 	model: DEFAULT_MODEL,
 	layout: DEFAULT_LAYOUT,
 	workspace: DEFAULT_WORKSPACE,
 	theme: 'system',
 	agentMode: 'code',
-	auth: DEFAULT_AUTH,
-	subscription: DEFAULT_SUBSCRIPTION,
 	systemPrompt: DEFAULT_SYSTEM_PROMPT,
 	modelSetup: DEFAULT_MODEL_SETUP,
 };

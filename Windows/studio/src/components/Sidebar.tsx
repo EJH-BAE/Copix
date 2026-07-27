@@ -1,8 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { ChatSession } from '../hooks/chatSessions';
 import type { WorkspaceEnvironment } from '../models/agentModes';
-import { PLANS } from '../services/subscription';
-import type { SubscriptionPlan } from '../types';
 import {
 	IconPlus, IconFolder, IconSettings, IconChat, IconCommand, IconSparkle, IconPanelRight, IconChevron,
 } from './Icons';
@@ -13,8 +11,6 @@ interface Props {
 	workspace?: string;
 	workspaceEnv?: WorkspaceEnvironment;
 	repoUrl?: string;
-	accountName?: string;
-	plan?: SubscriptionPlan;
 	serverOnline?: boolean;
 	onSelectSession: (id: string) => void;
 	onNewChat: () => void;
@@ -55,7 +51,7 @@ function relativeTime(ts: number): string {
 }
 
 export function Sidebar({
-	sessions, activeId, workspace, accountName, plan = 'free',
+	sessions, activeId, workspace,
 	onSelectSession, onNewChat, onOpenFolder, onCloneRepo, onOpenSettings, onOpenSetup,
 	onOpenPalette, onTogglePinSession, onDeleteSession,
 }: Props) {
@@ -120,9 +116,6 @@ export function Sidebar({
 	}, [sessions, workspace, activeId, repoFilter]);
 
 	const isExpanded = (path: string) => expanded[path] ?? path === workspace;
-
-	const initial = (accountName || 'U').slice(0, 1).toUpperCase();
-	const planLabel = PLANS.find(p => p.id === plan)?.label ?? 'Free';
 
 	return (
 		<aside className="sidebar sidebar-v2">
@@ -321,10 +314,10 @@ export function Sidebar({
 
 			<footer className="sidebar-profile">
 				<div className="sidebar-profile-left">
-					<span className="settings-avatar">{initial}</span>
+					<span className="settings-avatar">C</span>
 					<div className="sidebar-profile-text">
-						<div className="settings-user-name fade-edge">{accountName || 'User'}</div>
-						<div className="settings-user-plan">{planLabel} Plan</div>
+						<div className="settings-user-name fade-edge">Copix</div>
+						<div className="settings-user-plan">Free</div>
 					</div>
 				</div>
 				<button type="button" className="btn-icon" title="Settings" onClick={onOpenSettings}>

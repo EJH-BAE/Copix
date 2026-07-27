@@ -236,8 +236,6 @@ export function ChatCenter({
 		preferTuned: settings.model.preferTuned && Boolean(server.adapter),
 	});
 
-	const account = settings.accounts.find(a => a.id === settings.activeAccountId);
-
 	const agentMode = settings.agentMode;
 
 	// Cloud providers don't need local Ollama — a configured API key means we're ready.
@@ -734,8 +732,7 @@ export function ChatCenter({
 						<IconChevron width={11} height={11} className="chip-chevron" />
 					</button>
 					<span className="composer-hint">
-						{account?.displayName}
-						{workspace ? ` · ${shortPath(workspace)}` : ''}
+						{workspace ? shortPath(workspace) : 'No workspace'}
 					</span>
 					<span className="composer-keys">Enter to send · Shift+Enter for newline</span>
 				</div>

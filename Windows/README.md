@@ -10,7 +10,8 @@
 
 <p align="center">
 
-<img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT">
+<img src="https://img.shields.io/badge/License-Proprietary-lightgrey.svg" alt="License: Proprietary">
+<img src="https://img.shields.io/badge/Price-Free-brightgreen.svg" alt="Free">
 <img src="https://github.com/EJH-BAE/Copix/actions/workflows/dependabot/dependabot-updates/badge.svg" alt="dependabot-updates">
 </p>
 
@@ -72,8 +73,8 @@ ollama pull gpt-oss:120b  #120b model - only for more quality (not recommended)
 Install [Ollama](https://ollama.com), and leave it running (`ollama serve` or a minimized window), then open Copix.
 
 ### 2. First session in Copix
-- Log in / Sign up (create accounts in Supabase)
-- Set up preferences in the settings menu (recommended settings are in **Recommended Preferences**)
+- Set up preferences in the settings menu (saved to `~/Copix/settings.json`)
+- See **Recommended Preferences** below
 - Test if Ollama sync works properly using one of the example prompts.
 
 ## Build
@@ -120,9 +121,10 @@ Run the Copix app, or manually run it from the installed directory.
 
 ## License & Copyright
 
-Copix is a fork of [Code-OSS](https://github.com/microsoft/vscode). <br/>
-Copyright for [Code-OSS](https://github.com/microsoft/vscode) remains in [Microsoft](https://github.com/Microsoft). <br/>
-AI functions, components, UI, tool system, etc. are all copyright Bae Juhan.
+Copix is **free to use** and **not open source**. GitHub is used for development and deployment only — see [LICENSE.txt](LICENSE.txt).
+
+Portions may include third-party components (for example Code-OSS) under their own licenses.
+
 
 ## Links
 - [Ollama](https://ollama.com)

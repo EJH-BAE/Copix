@@ -45,6 +45,7 @@ const HIDDEN_FILE_NAMES = new Set([
 	'google-services.json',
 	'GoogleService-Info.plist',
 	'copix-config.json',
+	'settings.json',
 	'id_rsa',
 	'id_rsa.pub',
 	'id_dsa',

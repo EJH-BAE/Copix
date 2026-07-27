@@ -2,7 +2,7 @@
   "name": "copix",
   "version": "4.1.0",
   "private": true,
-  "description": "Copix — official AI IDE for macOS",
+  "description": "Copix \u2014 AI IDE for macOS (free)",
   "author": "EJH-BAE",
   "license": "MIT",
   "homepage": "https://github.com/EJH-BAE/Copix",
@@ -27,7 +27,6 @@
   "dependencies": {
     "@fontsource-variable/nunito": "^5.2.7",
     "@monaco-editor/react": "^4.7.0",
-    "@supabase/supabase-js": "^2.110.2",
     "monaco-editor": "^0.52.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
@@ -50,7 +49,7 @@
   "build": {
     "appId": "com.copix.app",
     "productName": "Copix",
-    "copyright": "Copyright © EJH-BAE",
+    "copyright": "Copyright \u00a9 EJH-BAE",
     "executableName": "Copix",
     "directories": {
       "output": "release/staging",

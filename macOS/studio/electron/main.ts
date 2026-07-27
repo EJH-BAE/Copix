@@ -555,7 +555,23 @@ async function runModelSetupPipeline(_epochs: unknown = 3): Promise<SetupResult>
 	}
 }
 
-const configPath = () => path.join(app.getPath('userData'), 'copix-config.json');
+/** User-visible Copix directory: ~/Copix (settings.json lives here). */
+function copixDir(): string {
+	return path.join(app.getPath('home'), 'Copix');
+}
+
+function settingsPath(): string {
+	return path.join(copixDir(), 'settings.json');
+}
+
+/** Legacy Electron userData config (migrated once into ~/Copix/settings.json). */
+function legacyConfigPath(): string {
+	return path.join(app.getPath('userData'), 'copix-config.json');
+}
+
+function ensureCopixDir(): void {
+	fsSync.mkdirSync(copixDir(), { recursive: true });
+}
 
 function defaultUserProjectsRoot(): string {
 	return app.getPath('home');
@@ -563,7 +579,7 @@ function defaultUserProjectsRoot(): string {
 
 function readWorkspaceHome(): string {
 	try {
-		const raw = fsSync.readFileSync(configPath(), 'utf8');
+		const raw = fsSync.readFileSync(settingsPath(), 'utf8');
 		const settings = JSON.parse(raw) as { workspace?: { homeDirectory?: string } };
 		const home = settings.workspace?.homeDirectory?.trim();
 		if (home && !/copix-output/i.test(home.replace(/\\/g, '/'))) {
@@ -849,15 +865,27 @@ async function loadRenderer(): Promise<void> {
 app.whenReady().then(() => {
 	ipcMain.handle('copix:getSettings', async () => {
 		try {
-			const raw = await fs.readFile(configPath(), 'utf8');
-			return JSON.parse(raw);
+			ensureCopixDir();
+			const primary = settingsPath();
+			if (fsSync.existsSync(primary)) {
+				return JSON.parse(await fs.readFile(primary, 'utf8'));
+			}
+			const legacy = legacyConfigPath();
+			if (fsSync.existsSync(legacy)) {
+				const raw = await fs.readFile(legacy, 'utf8');
+				const parsed = JSON.parse(raw);
+				await fs.writeFile(primary, JSON.stringify(parsed, null, 2), 'utf8');
+				return parsed;
+			}
+			return null;
 		} catch {
 			return null;
 		}
 	});
 
 	ipcMain.handle('copix:setSettings', async (_e, settings: unknown) => {
-		await fs.writeFile(configPath(), JSON.stringify(settings, null, 2), 'utf8');
+		ensureCopixDir();
+		await fs.writeFile(settingsPath(), JSON.stringify(settings, null, 2), 'utf8');
 	});
 
 	ipcMain.handle('copix:getProjectsRoot', async () => {

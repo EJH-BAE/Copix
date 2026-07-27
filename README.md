@@ -9,7 +9,8 @@
 </p>
 
 <p align="center">
-<img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT">
+<img src="https://img.shields.io/badge/License-Proprietary-lightgrey.svg" alt="License: Proprietary">
+<img src="https://img.shields.io/badge/Price-Free-brightgreen.svg" alt="Free">
 <img src="https://img.shields.io/badge/macOS-supported-blue.svg" alt="macOS">
 <img src="https://img.shields.io/badge/Windows-supported-blue.svg" alt="Windows">
 </p>
@@ -31,6 +32,6 @@ See [Windows/README.md](Windows/README.md). Output: `Windows/studio/release/Copi
 
 ## License & Copyright
 
-Copix is a fork of [Code-OSS](https://github.com/microsoft/vscode).  
-Copyright for Code-OSS remains with Microsoft.  
-AI functions, components, UI, tool system, etc. are copyright Bae Juhan.
+Copix is **free to use** and **not open source**. GitHub is used for development and deployment only — see [LICENSE.txt](LICENSE.txt).
+
+Portions may include third-party components (for example Code-OSS) under their own licenses.
