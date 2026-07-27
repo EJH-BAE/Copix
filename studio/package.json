@@ -2,7 +2,7 @@
   "name": "copix",
   "version": "4.1.0",
   "private": true,
-  "description": "Copix — official AI IDE for Windows and macOS",
+  "description": "Copix — official AI IDE for macOS",
   "author": "EJH-BAE",
   "license": "MIT",
   "homepage": "https://github.com/EJH-BAE/Copix",
@@ -17,12 +17,12 @@
     "core:dev": "node copix-core/dev-server.mjs",
     "studio": "vite",
     "studio:test": "npm run build && node scripts/check-build.mjs && electron .",
-    "studio:app": "npm run dist:dir && start release\\staging\\win-unpacked\\Copix.exe",
-    "studio:app:mac": "npm run dist:mac:dir && open release/staging/mac*/Copix.app",
-    "dist": "node scripts/pre-dist.mjs && vite build && electron-builder --win nsis && node scripts/post-dist.mjs",
-    "dist:dir": "node scripts/pre-dist.mjs && vite build && electron-builder --win dir && node scripts/post-dist.mjs",
-    "dist:mac": "node scripts/pre-dist.mjs && vite build && electron-builder --mac dmg zip && node scripts/post-dist.mjs",
-    "dist:mac:dir": "node scripts/pre-dist.mjs && vite build && electron-builder --mac dir && node scripts/post-dist.mjs"
+    "studio:app": "npm run dist:dir && open release/staging/mac*/Copix.app",
+    "icons": "node scripts/generate-icons.mjs",
+    "dist": "node scripts/pre-dist.mjs && vite build && electron-builder --mac dmg zip && node scripts/post-dist.mjs",
+    "dist:dir": "node scripts/pre-dist.mjs && vite build && electron-builder --mac dir && node scripts/post-dist.mjs",
+    "dist:mac": "npm run dist",
+    "dist:mac:dir": "npm run dist:dir"
   },
   "dependencies": {
     "@fontsource-variable/nunito": "^5.2.7",
@@ -42,8 +42,6 @@
     "@vitejs/plugin-react": "^4.3.4",
     "electron": "^34.3.0",
     "electron-builder": "^25.1.8",
-    "rcedit": "^4.0.1",
-    "resedit": "^3.0.2",
     "typescript": "^5.8.2",
     "vite": "^6.2.1",
     "vite-plugin-electron": "^0.29.0",
@@ -76,23 +74,12 @@
           "!**/__pycache__/**",
           "!**/*.pyc"
         ]
+      },
+      {
+        "from": "build/icon.png",
+        "to": "icon.png"
       }
     ],
-    "win": {
-      "target": [
-        {
-          "target": "nsis",
-          "arch": [
-            "x64"
-          ]
-        }
-      ],
-      "icon": "build/icon.ico",
-      "artifactName": "Copix-Setup-${version}-${arch}.${ext}",
-      "publisherName": "EJH-BAE",
-      "signAndEditExecutable": false,
-      "verifyUpdateCodeSignature": false
-    },
     "mac": {
       "category": "public.app-category.developer-tools",
       "icon": "build/icon.png",
@@ -121,19 +108,6 @@
     "dmg": {
       "title": "Copix ${version}",
       "artifactName": "Copix-${version}-mac-${arch}.${ext}"
-    },
-    "nsis": {
-      "oneClick": false,
-      "perMachine": false,
-      "allowToChangeInstallationDirectory": true,
-      "createDesktopShortcut": true,
-      "createStartMenuShortcut": true,
-      "shortcutName": "Copix",
-      "installerIcon": "build/installerIcon.ico",
-      "uninstallerIcon": "build/installerIcon.ico",
-      "installerHeaderIcon": "build/installerIcon.ico",
-      "deleteAppDataOnUninstall": false,
-      "runAfterFinish": true
     },
     "asar": true
   }

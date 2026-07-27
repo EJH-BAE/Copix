@@ -1,5 +1,5 @@
 /**
- * Copy installer artifacts from release/staging to release/ for easy discovery.
+ * Copy macOS installer artifacts from release/staging to release/.
  */
 import { copyFileSync, existsSync, mkdirSync, readdirSync, statSync } from 'node:fs';
 import path from 'node:path';
@@ -16,7 +16,7 @@ if (!existsSync(staging)) {
 
 mkdirSync(release, { recursive: true });
 
-const artifactExt = /\.(exe|blockmap|dmg|zip)$/i;
+const artifactExt = /\.(dmg|zip|blockmap)$/i;
 
 for (const name of readdirSync(staging)) {
 	if (!artifactExt.test(name)) continue;
@@ -25,11 +25,6 @@ for (const name of readdirSync(staging)) {
 	const to = path.join(release, name);
 	copyFileSync(from, to);
 	console.log('[post-dist] Copied', name, '→ release/');
-}
-
-const winUnpacked = path.join(staging, 'win-unpacked', 'Copix.exe');
-if (existsSync(winUnpacked)) {
-	console.log('[post-dist] App folder:', path.join(staging, 'win-unpacked'));
 }
 
 for (const name of readdirSync(staging)) {

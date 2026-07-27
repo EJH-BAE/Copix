@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
-# Build official Copix macOS app (.dmg + .zip) for /Users/baejuhan
+# Build official Copix macOS app (.dmg + .zip) — Mac-only product
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-echo "Copix macOS installer build"
+echo "Copix macOS build"
 echo "Working directory: $(pwd)"
 
 if [[ "$(uname -s)" != "Darwin" ]]; then
-	echo "Warning: packaging a signed Mac app is best done on macOS."
-	echo "Continuing with electron-builder --mac (cross-compile may be limited)."
+	echo "Error: Copix is a macOS-only app. Build on a Mac (e.g. /Users/baejuhan)."
+	exit 1
 fi
 
 if [[ ! -d node_modules/electron-builder ]]; then
@@ -19,7 +19,7 @@ else
 fi
 
 echo "[2/3] Building app + packaging macOS installer..."
-npm run dist:mac
+npm run dist
 
 echo "[3/3] Artifacts:"
 find release release/staging -maxdepth 2 \( -name '*.dmg' -o -name '*.zip' -o -name 'Copix.app' \) 2>/dev/null | while read -r f; do

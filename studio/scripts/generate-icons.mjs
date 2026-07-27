@@ -1,6 +1,8 @@
 /**
 
- * Regenerate build/icon.ico, installer icons, Start Menu tiles, and favicon.
+ * Regenerate build/icon.png (macOS squircle), favicon, and helper tiles.
+
+ * Source: build/icon-source.png or build/icon.png
 
  * Requires: pip install pillow
 
@@ -20,15 +22,17 @@ const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 
 const build = path.join(root, 'build');
 
-const png = path.join(build, 'icon.png');
+const src = existsSync(path.join(build, 'icon-source.png'))
+	? path.join(build, 'icon-source.png')
+	: path.join(build, 'icon.png');
 
-const ico = path.join(build, 'icon.ico');
+const out = path.join(build, 'icon.png');
 
 
 
-if (!existsSync(png)) {
+if (!existsSync(src)) {
 
-	console.error('Missing source icon:', png);
+	console.error('Missing source icon:', src);
 
 	process.exit(1);
 
@@ -38,53 +42,57 @@ if (!existsSync(png)) {
 
 const py = `
 
-from PIL import Image
+from PIL import Image, ImageDraw, ImageFilter
 
-png = r"${png.replace(/\\/g, '\\\\')}"
+src = r"${src.replace(/\\/g, '\\\\')}"
 
 build = r"${build.replace(/\\/g, '\\\\')}"
 
-img = Image.open(png).convert('RGBA')
+size = 1024
+
+img = Image.open(src).convert('RGBA').resize((size, size), Image.Resampling.LANCZOS)
 
 
 
-def tile(size, out):
+ss = 4
 
-    canvas = Image.new('RGBA', (size, size), (15, 15, 16, 255))
+m = Image.new('L', (size * ss, size * ss), 0)
 
-    mark = img.copy()
+draw = ImageDraw.Draw(m)
 
-    mark.thumbnail((int(size * 0.62), int(size * 0.62)), Image.Resampling.LANCZOS)
+r = int(size * ss * 0.2237)
 
-    ox = (size - mark.width) // 2
+draw.rounded_rectangle([0, 0, size * ss - 1, size * ss - 1], radius=r, fill=255)
 
-    oy = (size - mark.height) // 2
-
-    canvas.paste(mark, (ox, oy), mark)
-
-    canvas.save(out, format='PNG')
-
-    print('Wrote', out)
+mask = m.resize((size, size), Image.Resampling.LANCZOS).filter(ImageFilter.GaussianBlur(0.6))
 
 
 
-base = img.resize((256, 256), Image.Resampling.LANCZOS)
+out = Image.new('RGBA', (size, size), (0, 0, 0, 0))
 
-sizes = [(16,16),(24,24),(32,32),(48,48),(64,64),(128,128),(256,256)]
+out.paste(img, (0, 0))
 
-base.save(r"${ico.replace(/\\/g, '\\\\')}", format='ICO', sizes=sizes)
+out.putalpha(mask)
 
-print('Wrote', r"${ico.replace(/\\/g, '\\\\')}")
+out.save(r"${out.replace(/\\/g, '\\\\')}", format='PNG', optimize=True)
 
-tile(150, build + '/Copix_150.png')
+print('Wrote', r"${out.replace(/\\/g, '\\\\')}")
 
-tile(70, build + '/Copix_70.png')
+
+
+for dim, name in [(150, 'Copix_150.png'), (70, 'Copix_70.png')]:
+
+    t = out.resize((dim, dim), Image.Resampling.LANCZOS)
+
+    t.save(build + '/' + name, format='PNG', optimize=True)
+
+    print('Wrote', name)
 
 `;
 
 
 
-const result = spawnSync('python', ['-c', py], { stdio: 'inherit' });
+const result = spawnSync('python3', ['-c', py], { stdio: 'inherit' });
 
 if (result.status !== 0) {
 
@@ -94,10 +102,7 @@ if (result.status !== 0) {
 
 
 
-copyFileSync(ico, path.join(build, 'installerIcon.ico'));
+copyFileSync(out, path.join(root, 'public', 'favicon.png'));
 
-copyFileSync(png, path.join(root, 'public', 'favicon.png'));
-
-console.log('Synced installerIcon.ico, Copix_150.png, Copix_70.png, favicon.png');
-
+console.log('Synced favicon.png');
 

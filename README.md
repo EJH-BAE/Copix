@@ -78,47 +78,34 @@ Install [Ollama](https://ollama.com), and leave it running (`ollama serve` or a 
 
 ## Build
 
-**Requirements** : Node.js (`npm`)
+**Requirements:** macOS + Node.js (`npm`)
 
-### Windows
-
-```powershell
-powershell -ExecutionPolicy Bypass -File .\scripts\build-windows-installer.ps1    #dependencies + app
-```
-
-Output: `studio\release\Copix-Setup-<version>-x64.exe`  
-Running: `Copix.exe`
-
-### macOS (user `/Users/baejuhan`)
-
-Build on a Mac:
+Copix is a **macOS-only** app (built for `/Users/baejuhan`).
 
 ```bash
 cd studio
-chmod +x scripts/build-mac.sh
 ./scripts/build-mac.sh
 ```
 
 Or:
 
 ```bash
-cd studio && npm install && npm run dist:mac
+cd studio && npm install && npm run dist
 ```
 
 Output: `studio/release/Copix-<version>-mac-arm64.dmg` (Apple Silicon) and/or `…-mac-x64.dmg` (Intel)  
-Running: open `Copix.app` (or drag it to Applications)
+Running: open `Copix.app`, or drag it to Applications
 
 Recommended home directory in Settings: `/Users/baejuhan`
 
 ## Download
 
-Download the latest installer from [Releases](https://github.com/EJH-BAE/Copix/releases).
-- **Windows:** run the `.exe` installer
-- **macOS:** open the `.dmg` and drag Copix to Applications
+Download the latest macOS installer from [Releases](https://github.com/EJH-BAE/Copix/releases).
+Open the `.dmg` and drag Copix to Applications.
 
 ## Run
 
-Run the Copix app, or manually run it from the installed directory.
+Open Copix from Applications (or the unpacked `.app`).
 
 ## Recommended Preferences
 
@@ -137,8 +124,7 @@ Run the Copix app, or manually run it from the installed directory.
 
 | Preferences | Recommended | 
 | :--: | :-- |
-| Home Directory (Windows) | `C:\Programming\` (or any programming directory you want) |
-| Home Directory (macOS) | `/Users/baejuhan` |
+| Home Directory | `/Users/baejuhan` |
 | Default Agent Mode | `Code` |
 
 

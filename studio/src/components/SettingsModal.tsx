@@ -457,7 +457,7 @@ export function SettingsModal({ open, settings, onClose, onChange, onOpenSetup, 
 								})}
 							/>
 							<label className="field-label">Home directory</label>
-							<p className="settings-hint">Where Copix creates new projects (default: your user folder, e.g. /Users/baejuhan on Mac or C:/Users/you on Windows).</p>
+							<p className="settings-hint">Where Copix creates new projects (default: /Users/baejuhan).</p>
 							<div className="field-row">
 								<input
 									className="field-input"

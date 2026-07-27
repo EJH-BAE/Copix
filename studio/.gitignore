@@ -2,10 +2,9 @@ node_modules
 dist
 dist-electron
 release/*
-!release/*.exe
-!release/*.exe.blockmap
 !release/*.dmg
 !release/*.zip
+!release/*.blockmap
 *.log
 .env
 .venv/

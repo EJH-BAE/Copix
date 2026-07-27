@@ -1,4 +1,4 @@
-/** Host platform helpers for Copix Studio (Electron). */
+/** Host platform helpers for Copix Studio (macOS-first). */
 
 export type HostPlatform = 'darwin' | 'win32' | 'linux' | string;
 
@@ -7,13 +7,13 @@ let cached: HostPlatform | null = null;
 export function getHostPlatform(): HostPlatform {
 	if (cached) return cached;
 	try {
-		const p = window.copix?.getPlatform?.();
+		const p = window.copix?.getPlatform?.() ?? window.copix?.platform;
 		if (typeof p === 'string' && p) {
 			cached = p;
 			return cached;
 		}
 	} catch { /* fall through */ }
-	cached = 'win32';
+	cached = 'darwin';
 	return cached;
 }
 
@@ -40,14 +40,10 @@ export function shellPrompt(cwd: string): string {
 
 /** Example home path for settings placeholders / docs. */
 export function homePathExample(): string {
-	if (isMac()) return '/Users/baejuhan';
-	if (isWindows()) return 'C:/Users/you';
-	return '/home/you';
+	return '/Users/baejuhan';
 }
 
 /** Example project path used in agent prompts. */
 export function projectPathExample(name = 'my-app'): string {
-	if (isMac()) return `/Users/baejuhan/${name}`;
-	if (isWindows()) return `C:/Users/you/${name}`;
-	return `/home/you/${name}`;
+	return `/Users/baejuhan/${name}`;
 }
