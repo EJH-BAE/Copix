@@ -30,6 +30,52 @@ See [macOS/README.md](macOS/README.md). Output: `macOS/studio/release/Copix-*-ma
 ### Windows
 See [Windows/README.md](Windows/README.md). Output: `Windows/studio/release/Copix-Setup-*-x64.exe`
 
+## Settings (`~/Copix/settings.json`)
+
+Copix has **no accounts**. Preferences are stored locally in:
+
+| OS | Path |
+| :-- | :-- |
+| macOS | `/Users/<you>/Copix/settings.json` (e.g. `/Users/baejuhan/Copix/settings.json`) |
+| Windows | `C:\Users\<you>\Copix\settings.json` |
+
+The app creates the `Copix` folder and file when you change Settings. Editing models, theme, workspace home, agent mode, or rules updates this file; restarting Copix reloads it.
+
+Example:
+
+```json
+{
+  "model": {
+    "provider": "local",
+    "endpoint": "http://127.0.0.1:11434/v1",
+    "apiKey": "",
+    "modelId": "gpt-oss:20b",
+    "tunedModelId": "copix-core",
+    "preferTuned": false,
+    "trainingDataPath": "",
+    "lowVram": false
+  },
+  "layout": { "sidebarWidth": 220, "editorWidth": 420 },
+  "workspace": { "homeDirectory": "/Users/baejuhan" },
+  "theme": "system",
+  "agentMode": "code",
+  "systemPrompt": { "customRules": [] },
+  "modelSetup": { "completed": false, "skipped": false }
+}
+```
+
+| Key | What it controls |
+| :-- | :-- |
+| `model` | Local Ollama / cloud provider, model IDs, Copix Core, low VRAM |
+| `workspace.homeDirectory` | Where new projects are created |
+| `theme` | `system` \| `dark` \| `light` |
+| `agentMode` | Default agent mode (`plan`, `code`, `debug`, `terminal`) |
+| `systemPrompt.customRules` | Extra rules appended to the agent prompt |
+| `layout` | Sidebar / editor panel widths |
+| `modelSetup` | Whether the first-run model wizard was finished or skipped |
+
+Prefer using **Settings** in the app; hand-editing the JSON is optional.
+
 ## License & Copyright
 
 Copix is **free to use** and **not open source**. GitHub is used for development and deployment only — see [LICENSE.txt](LICENSE.txt).
