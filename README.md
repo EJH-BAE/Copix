@@ -24,7 +24,7 @@
 | [`macOS/`](macOS/) | macOS (Apple Silicon / Intel) | `cd macOS/studio && ./scripts/build-mac.sh` |
 | [`Windows/`](Windows/) | Windows x64 | `cd Windows/studio && powershell -ExecutionPolicy Bypass -File .\scripts\build-windows-installer.ps1` |
 
-### macOS (`/Users/baejuhan`)
+### macOS (`/Users/{username}`)
 See [macOS/README.md](macOS/README.md). Output: `macOS/studio/release/Copix-*-mac-*.dmg`
 
 ### Windows
@@ -36,7 +36,7 @@ Copix has **no accounts**. Preferences are stored locally in:
 
 | OS | Path |
 | :-- | :-- |
-| macOS | `/Users/<you>/Copix/settings.json` (e.g. `/Users/baejuhan/Copix/settings.json`) |
+| macOS | `/Users/<you>/Copix/settings.json` (e.g. `/Users/{username}/Copix/settings.json`) |
 | Windows | `C:\Users\<you>\Copix\settings.json` |
 
 The app creates the `Copix` folder and file when you change Settings. Editing models, theme, workspace home, or agent mode updates this file; restarting Copix reloads it.
@@ -50,7 +50,7 @@ Example:
     "lowVram": false
   },
   "layout": { "sidebarWidth": 220, "editorWidth": 420 },
-  "workspace": { "homeDirectory": "/Users/baejuhan" },
+  "workspace": { "homeDirectory": "/Users/{username}" },
   "theme": "system",
   "agentMode": "code"
 }
