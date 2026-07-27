@@ -5,23 +5,21 @@ node_modules/
 .env
 .env.local
 
-# Copix Studio build outputs (installers copied to studio/release/)
-studio/node_modules/
-studio/dist/
-studio/dist-electron/
-studio/release/staging/
-studio/release/*.exe
-studio/release/*.blockmap
-studio/.env
-studio/copix-core/.venv/
-studio/copix-core/output/
-studio/copix-core/tools/
-studio/copix-cloud/.venv/
-studio/copix-cloud/.env
-
-# Large binaries — ship via GitHub Releases, not git
-/Copix.exe
-*.exe.blockmap
+# Build outputs
+**/node_modules/
+**/dist/
+**/dist-electron/
+**/release/staging/
+**/release/*.exe
+**/release/*.blockmap
+**/release/*.dmg
+**/release/*.zip
+**/.venv/
+**/copix-core/output/
+**/copix-core/tools/
+**/copix-cloud/.venv/
+**/__pycache__/
+*.pyc
 
 # Local IDE
 .cursor/
