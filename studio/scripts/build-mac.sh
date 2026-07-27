@@ -15,7 +15,15 @@ if [[ ! -d node_modules/electron-builder ]]; then
 	echo "[1/3] Installing dependencies (including electron-builder)..."
 	npm install
 else
-	echo "[1/3] Dependencies present"
+	echo "[1/3] Dependencies present — refreshing Electron binary for macOS…"
+	node scripts/install-electron.mjs
+fi
+
+# macOS Electron lives at dist/Electron.app/... — repair if a prior Windows/Linux extract left a bare "electron"
+if [[ ! -x node_modules/electron/dist/Electron.app/Contents/MacOS/Electron ]]; then
+	echo "[1b/3] Repairing Electron.app…"
+	rm -rf node_modules/electron/dist
+	node scripts/install-electron.mjs
 fi
 
 echo "[2/3] Building app + packaging macOS installer..."
