@@ -23,6 +23,17 @@
 | :-- | :-- | :-- |
 | [`macOS/`](macOS/) | macOS (Apple Silicon / Intel) | `cd macOS && ./tools/build-mac.sh` |
 | [`Windows/`](Windows/) | Windows x64 | `cd Windows/studio && powershell -ExecutionPolicy Bypass -File .\scripts\build-windows-installer.ps1` |
+| [`cli/`](cli/) | Terminal (Node 18+) | `curl -fsSL https://raw.githubusercontent.com/EJH-BAE/Copix/main/cli/install.sh \| bash` |
+
+### Terminal (`cli/`)
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/EJH-BAE/Copix/main/cli/install.sh | bash
+copix
+copix "summarize this repo"
+```
+
+See [cli/README.md](cli/README.md). Uses the same `~/Copix/settings.json` as the desktop apps.
 
 ### macOS (`/Users/{username}`)
 See [macOS/README.md](macOS/README.md). Output: `macOS/studio/release/Copix-*-mac-*.dmg`

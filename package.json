@@ -9,6 +9,8 @@
     "dist:mac": "npm run dist --prefix macOS/studio",
     "dist:win": "npm run dist --prefix Windows/studio",
     "install:mac": "npm install --prefix macOS/studio",
-    "install:win": "npm install --prefix Windows/studio"
+    "install:win": "npm install --prefix Windows/studio",
+    "copix": "node cli/bin/copix.js",
+    "cli": "node cli/bin/copix.js"
   }
 }
