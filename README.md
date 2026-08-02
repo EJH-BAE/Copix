@@ -71,7 +71,7 @@ Example:
 | :-- | :-- |
 | `model.modelId` | Ollama model tag (default `qwen2.5:3b`) |
 | `model.lowVram` | Smaller context for low-memory machines |
-| `workspace.homeDirectory` | Where new projects are created |
+| `workspace.homeDirectory` | Default agent workspace / where new projects are created (defaults to `/Users/<you>` or `C:\\Users\\<you>`) |
 | `theme` | `system` \| `dark` \| `light` |
 | `agentMode` | Default agent mode (`plan`, `code`, `debug`, `terminal`) |
 | `layout` | Sidebar / editor panel widths |
