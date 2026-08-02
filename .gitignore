@@ -21,3 +21,4 @@ node_modules/
 # Local IDE
 .cursor/
 .claude/
+cli/node_modules/
