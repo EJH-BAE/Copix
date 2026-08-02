@@ -4,15 +4,11 @@ Marketing site for https://github.com/EJH-BAE/Copix
 
 **Live:** https://ejh-bae.github.io/Copix/
 
-## Features
-
-- Pretendard + IBM Plex Mono (English / Korean)
-- Automatic light / dark theme via `prefers-color-scheme`
-- EN / 한국어 language toggle
+Mirrors the [cursor.com](https://cursor.com/) landing structure with Copix branding: hero, agents, terminal install, quotes, frontier models, changelog, and research.
 
 ## Develop
 
-```powershell
+```bash
 cd app
 npm install
 npm run dev
@@ -20,9 +16,16 @@ npm run dev
 
 ## Build & publish
 
-```powershell
+```bash
 cd app
-$env:GITHUB_PAGES='true'
-npm run build
-# copy dist → branch root, then commit
+GITHUB_PAGES=true npm run build
+cp -f dist/index.html ../index.html
+rm -rf ../assets && cp -R dist/assets ../assets
+# commit on public_site and push
+```
+
+Install CLI (from `main`):
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/EJH-BAE/Copix/main/cli/install.sh | bash
 ```
