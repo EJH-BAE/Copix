@@ -250,7 +250,7 @@ export default function App() {
 
 				<section className="research">
 					<p className="research-lead">
-						Copix is a free desktop coding agent with a matching CLI — built for builders who want speed without giving up their machine.
+						Copix is a free desktop coding agent with a matching CLI — built for builders who want speed without giving up their machine. Free to use, proprietary software (not open source).
 					</p>
 					<h2>Notes & releases</h2>
 					<div className="post-grid">
@@ -292,7 +292,7 @@ export default function App() {
 					<a href={RELEASES}>Download</a>
 					<a href={GITHUB}>GitHub</a>
 				</div>
-				<p className="footer-copy">© {new Date().getFullYear()} Copix. Fast. Efficient. Precise.</p>
+				<p className="footer-copy">© {new Date().getFullYear()} Copix. Free to use · proprietary · not open source.</p>
 			</footer>
 		</div>
 	);

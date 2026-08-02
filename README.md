@@ -6,6 +6,8 @@ Marketing site for https://github.com/EJH-BAE/Copix
 
 Original Copix positioning — local-first desktop agent + matching CLI. Not a Cursor clone.
 
+Copix is **free to use** and **not open source** (proprietary).
+
 ## Develop
 
 ```bash
