@@ -33,7 +33,7 @@ copix
 copix "summarize this repo"
 ```
 
-See [cli/README.md](cli/README.md). Synced with Desktop — same agent loop, tools (`create_project`, `edit_file`, `terminal`, …), and `~/Copix/settings.json`.
+See [cli/README.md](cli/README.md). Synced with Desktop — same agent loop, tools (`create_project`, `edit_file`, `terminal`, `web_search`, `web_fetch`, …), and `~/Copix/settings.json`.
 
 **Site:** https://ejh-bae.github.io/Copix/ (`public_site` branch)
 
