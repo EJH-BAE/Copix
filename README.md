@@ -33,7 +33,7 @@ copix
 copix "summarize this repo"
 ```
 
-See [cli/README.md](cli/README.md). Uses the same `~/Copix/settings.json` as the desktop apps.
+See [cli/README.md](cli/README.md). Synced with Desktop — same agent loop, tools (`create_project`, `edit_file`, `terminal`, …), and `~/Copix/settings.json`.
 
 ### macOS (`/Users/{username}`)
 See [macOS/README.md](macOS/README.md). Output: `macOS/studio/release/Copix-*-mac-*.dmg`
