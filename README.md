@@ -57,6 +57,7 @@ Example:
 ```json
 {
   "model": {
+    "provider": "ollama",
     "modelId": "qwen2.5:3b",
     "lowVram": false
   },
@@ -69,6 +70,7 @@ Example:
 
 | Key | What it controls |
 | :-- | :-- |
+| `model.provider` | `ollama` (default — local models) |
 | `model.modelId` | Ollama model tag (default `qwen2.5:3b`) |
 | `model.lowVram` | Smaller context for low-memory machines |
 | `workspace.homeDirectory` | Default agent workspace / where new projects are created (defaults to `/Users/<you>` or `C:\\Users\\<you>`) |
