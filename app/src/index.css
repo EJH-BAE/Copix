@@ -248,8 +248,8 @@ button, .btn { font: inherit; }
 }
 .split {
 	display: grid;
-	grid-template-columns: 1fr 1fr;
-	gap: 48px;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 36px;
 }
 .split article, .frontier article {
 	padding: 0;
@@ -311,6 +311,13 @@ button, .btn { font: inherit; }
 	font-size: 15px;
 	line-height: 1.45;
 	color: var(--ink-2);
+}
+.quote blockquote strong {
+	display: inline-block;
+	margin-bottom: 6px;
+	color: var(--ink);
+	font-size: 1.05rem;
+	letter-spacing: -0.02em;
 }
 .quote figcaption { display: grid; gap: 2px; }
 .quote strong { font-size: 14px; }

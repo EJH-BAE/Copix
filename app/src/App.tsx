@@ -1,62 +1,77 @@
 const GITHUB = 'https://github.com/EJH-BAE/Copix';
 const RELEASES = `${GITHUB}/releases`;
+const INSTALL = 'curl -fsSL https://raw.githubusercontent.com/EJH-BAE/Copix/main/cli/install.sh | bash';
 const ICON = `${import.meta.env.BASE_URL}icon.png`;
 
-const quotes = [
+const pillars = [
 	{
-		text: 'It was night and day from one batch to another. Adoption went from single digits to over 80%. It just spread like wildfire — all the best builders were using Copix.',
-		name: 'Diana Hu',
-		role: 'General Partner, Y Combinator',
+		title: 'Local-first by default',
+		body: 'Agents run on your Mac or Windows machine with Ollama. Your code stays on disk — no account required.',
 	},
 	{
-		text: 'My favorite enterprise AI service is Copix. Every one of our engineers is now assisted by AI and our productivity has gone up incredibly.',
-		name: 'Jensen Huang',
-		role: 'President & CEO, NVIDIA',
+		title: 'Desktop and terminal, same brain',
+		body: 'Copix Studio and the Copix CLI share one agent loop, one tool surface, and one settings file.',
 	},
 	{
-		text: 'The best LLM applications have an autonomy slider: you control how much independence to give the AI. In Copix, target a single edit — or let the agent rip.',
-		name: 'Andrej Karpathy',
-		role: 'CEO, Eureka Labs',
+		title: 'Projects with real names',
+		body: 'New work lands under your user folder with readable names like ollama-dev-agent — not agent-1785…',
+	},
+];
+
+const truths = [
+	{
+		title: 'No login wall',
+		body: 'Open the app, open a folder, start building. Preferences live in ~/Copix/settings.json.',
 	},
 	{
-		text: 'Copix quickly grew from hundreds to thousands of extremely enthusiastic engineers. Making software creation more efficient has significant economic outcomes.',
-		name: 'Patrick Collison',
-		role: 'Co‑Founder & CEO, Stripe',
+		title: 'Bring your own model',
+		body: 'Start with local Ollama. Swap models when you want — Copix does not lock you into a hosted plan.',
 	},
 	{
-		text: 'The most useful AI tool I currently pay for, hands down, is Copix. Fast, sensible shortcuts, bring-your-own-model — everything is well put together.',
-		name: 'shadcn',
-		role: 'Creator of shadcn/ui',
-	},
-	{
-		text: "It's becoming more fun to be a programmer. We're at the 1% of what's possible, and interactive experiences like Copix are where models shine brightest.",
-		name: 'Greg Brockman',
-		role: 'President, OpenAI',
+		title: 'Tools that touch the real filesystem',
+		body: 'Read, edit, create projects, run the shell, search with ripgrep — the agent works where you work.',
 	},
 ];
 
 const changelog = [
-	{ date: 'Aug 2, 2026', title: 'OpenRouter & OpenAI frontier models' },
-	{ date: 'Jul 30, 2026', title: 'Cursor-style Agents UI density' },
-	{ date: 'Jul 28, 2026', title: 'Groq cloud provider for instant models' },
-	{ date: 'Jul 22, 2026', title: 'Sidebars, dark theme, IDE window' },
+	{ date: 'Aug 2, 2026', title: 'CLI synced with Desktop agent tools' },
+	{ date: 'Aug 2, 2026', title: 'Default workspace is your user home' },
+	{ date: 'Aug 2, 2026', title: 'Ollama-first defaults for Studio and CLI' },
+	{ date: 'Jul 30, 2026', title: 'Denser Agents UI and model picker' },
 ];
 
-const posts = [
-	{ date: 'Aug 2, 2026', tag: 'Product', title: 'Frontier models via OpenRouter', author: 'Copix Team', mins: 4 },
-	{ date: 'Jul 30, 2026', tag: 'Product', title: 'Agents UI that feels like home', author: 'Copix Team', mins: 3 },
-	{ date: 'Jul 20, 2026', tag: 'Research', title: 'Agent loops and model economics', author: 'Copix Team', mins: 12 },
-	{ date: 'Jun 29, 2026', tag: 'Product', title: 'Copix for macOS and Windows', author: 'Copix Team', mins: 6 },
+const notes = [
+	{
+		date: 'Aug 2, 2026',
+		tag: 'Product',
+		title: 'One agent for Studio and the terminal',
+		author: 'Copix Team',
+		mins: 4,
+	},
+	{
+		date: 'Aug 2, 2026',
+		tag: 'Product',
+		title: 'Home folder workspaces and named projects',
+		author: 'Copix Team',
+		mins: 3,
+	},
+	{
+		date: 'Jul 28, 2026',
+		tag: 'Product',
+		title: 'Native builds for macOS and Windows',
+		author: 'Copix Team',
+		mins: 5,
+	},
+	{
+		date: 'Jul 22, 2026',
+		tag: 'Product',
+		title: 'Integrated editor, terminal, and file tree',
+		author: 'Copix Team',
+		mins: 4,
+	},
 ];
 
-const models = [
-	'Auto',
-	'Claude Opus',
-	'GPT-4o',
-	'Gemini 2.5 Pro',
-	'Llama 3.3 70B',
-	'Grok via OpenRouter',
-];
+const models = ['qwen2.5:3b', 'qwen2.5-coder:7b', 'mistral:7b', 'qwen3.5:4b', 'Auto'];
 
 export default function App() {
 	return (
@@ -67,8 +82,8 @@ export default function App() {
 					<span>Copix</span>
 				</a>
 				<nav className="nav-links" aria-label="Primary">
-					<a href="#agents">Agents</a>
-					<a href="#tools">Tools</a>
+					<a href="#product">Product</a>
+					<a href="#install">Install</a>
 					<a href="#models">Models</a>
 					<a href="#changelog">Changelog</a>
 					<a href={GITHUB} target="_blank" rel="noreferrer">
@@ -77,7 +92,7 @@ export default function App() {
 				</nav>
 				<div className="nav-actions">
 					<a className="btn ghost" href={GITHUB} target="_blank" rel="noreferrer">
-						Sign in
+						Source
 					</a>
 					<a className="btn primary" href={RELEASES} target="_blank" rel="noreferrer">
 						Download
@@ -87,18 +102,21 @@ export default function App() {
 
 			<main id="top">
 				<section className="hero">
+					<p className="hero-kicker">Free desktop coding agent</p>
 					<h1 className="hero-title">
-						Copix is your coding agent
+						Copix.
 						<br />
-						for building ambitious software.
+						Fast. Efficient. Precise.
 					</h1>
-					<p className="hero-trust">Trusted every day by teams that build world-class software</p>
+					<p className="hero-trust">
+						Turn intent into real code on your machine — with your models, your folders, and a matching CLI.
+					</p>
 					<div className="hero-cta">
 						<a className="btn primary lg" href={RELEASES} target="_blank" rel="noreferrer">
-							Download Copix
+							Get the desktop app
 						</a>
 						<a className="btn ghost lg" href="#install">
-							Install CLI
+							Install the CLI
 						</a>
 					</div>
 					<div className="hero-plane" aria-hidden="true">
@@ -108,31 +126,32 @@ export default function App() {
 								<span />
 								<span />
 								<span />
-								<em>copix · agent</em>
+								<em>copix · ~/sites/marketing-site</em>
 							</div>
 							<div className="product-body">
 								<aside className="product-side">
 									<div className="side-row">New Agent</div>
 									<div className="side-row">Search</div>
-									<div className="side-row">Automations</div>
-									<div className="side-label">Repositories</div>
-									<div className="side-repo active">sites · Can you cre…</div>
-									<div className="side-repo">copix</div>
+									<div className="side-label">Home</div>
+									<div className="side-repo active">marketing-site</div>
+									<div className="side-repo">ollama-dev-agent</div>
+									<div className="side-repo">invoice-dashboard</div>
 								</aside>
 								<div className="product-chat">
-									<div className="chat-bubble user">let's build a dashboard for our research findings</div>
-									<div className="chat-meta">Explored 12 files · 4 searches</div>
-									<div className="chat-bubble assistant">
-										On it. I'll wire the research data, add interactive charts, and keep your theme config.
+									<div className="chat-bubble user">
+										Create a marketing site template in ~/sites and wire a clean hero.
 									</div>
-									<div className="chat-meta">Worked for 14m 22s</div>
+									<div className="chat-meta">create_project · write_file · edit_file</div>
+									<div className="chat-bubble assistant">
+										Created <strong>marketing-site</strong> under your sites folder. Hero, nav, and install CTA are in place — open the folder to review.
+									</div>
 									<div className="chat-summary">
-										<strong>Summary</strong>
-										Built the interactive dashboard with realtime charts and shadcn components. Deployed to staging.
+										<strong>Done</strong>
+										Project at ~/sites/marketing-site · README + index.html + styles.css
 									</div>
 									<div className="chat-composer">
 										<span>Send follow-up…</span>
-										<em>Agent · Opus</em>
+										<em>Ollama · qwen2.5-coder</em>
 									</div>
 								</div>
 							</div>
@@ -140,69 +159,58 @@ export default function App() {
 					</div>
 				</section>
 
-				<section className="split" id="agents">
-					<article>
-						<h2>Agents turn ideas into code</h2>
-						<p>
-							Accelerate development by handing off tasks to Copix, while you focus on making decisions.
-						</p>
-						<a className="text-link" href={GITHUB}>
-							Learn about agentic development →
-						</a>
-					</article>
-					<article>
-						<h2>Works autonomously, runs in parallel</h2>
-						<p>
-							Agents use their own workspace to build, test, and demo features end to end for you to review.
-						</p>
-						<a className="text-link" href={GITHUB}>
-							Learn about cloud agents →
-						</a>
-					</article>
+				<section className="split" id="product">
+					{pillars.map(p => (
+						<article key={p.title}>
+							<h2>{p.title}</h2>
+							<p>{p.body}</p>
+						</article>
+					))}
 				</section>
 
-				<section className="band" id="tools">
+				<section className="band" id="install">
 					<div className="band-copy">
-						<h2>In every tool, at every step</h2>
-						<p>Copix runs in your desktop app, your terminal, and alongside your repos on GitHub.</p>
-						<pre className="install" id="install">
-							<code>curl -fsSL https://raw.githubusercontent.com/EJH-BAE/Copix/main/cli/install.sh | bash</code>
+						<h2>Desktop app. Terminal. Same settings.</h2>
+						<p>
+							Install the CLI once — it uses the same agent tools as Studio and reads ~/Copix/settings.json.
+						</p>
+						<pre className="install">
+							<code>{INSTALL}</code>
 						</pre>
 					</div>
 					<div className="band-copy">
-						<h2>Automate repetitive work</h2>
+						<h2>Open a folder. Start.</h2>
 						<p>
-							Set up agents that run on schedules or triggers to build, maintain, and fix your software.
+							Agents begin in your user home so the whole machine is reachable. New apps get kebab-case names under home or a parent you name.
 						</p>
-						<a className="text-link" href={GITHUB}>
-							Learn about Automations →
+						<a className="text-link" href={RELEASES} target="_blank" rel="noreferrer">
+							Download for macOS or Windows →
 						</a>
 					</div>
 				</section>
 
 				<section className="quotes">
-					<h2>The new way to build software.</h2>
+					<h2>Built for people who ship.</h2>
 					<div className="quote-grid">
-						{quotes.map(q => (
-							<figure key={q.name} className="quote">
-								<blockquote>“{q.text}”</blockquote>
-								<figcaption>
-									<strong>{q.name}</strong>
-									<span>{q.role}</span>
-								</figcaption>
+						{truths.map(t => (
+							<figure key={t.title} className="quote">
+								<blockquote>
+									<strong>{t.title}</strong>
+									<br />
+									{t.body}
+								</blockquote>
 							</figure>
 						))}
 					</div>
 				</section>
 
 				<section className="frontier" id="models">
-					<h2>Stay on the frontier</h2>
+					<h2>Pick the model. Keep the keys.</h2>
 					<div className="frontier-grid">
 						<article>
-							<h3>Use the best model for every task</h3>
+							<h3>Local Ollama first</h3>
 							<p>
-								Choose cutting-edge models from OpenAI, Anthropic, Gemini, Groq, and OpenRouter — or run local
-								Ollama models.
+								Copix defaults to Ollama so you can work offline and privately. Pull a model and go.
 							</p>
 							<div className="model-chip-row">
 								{models.map((m, i) => (
@@ -213,15 +221,12 @@ export default function App() {
 							</div>
 						</article>
 						<article>
-							<h3>Build with autonomous agents</h3>
-							<p>Launch agents that work in parallel on ambitious tasks for hours.</p>
-							<a className="text-link" href={GITHUB}>
-								Learn about agents ↗
-							</a>
+							<h3>Agents that edit and run</h3>
+							<p>Create projects, patch files, search the tree, and run shell commands — then report what changed.</p>
 						</article>
 						<article>
-							<h3>Develop enduring software</h3>
-							<p>Native macOS and Windows apps, local settings, and bring-your-own-model privacy.</p>
+							<h3>Native macOS & Windows</h3>
+							<p>No browser sandbox for your main workflow. Studio is a real desktop IDE panel with chat, files, and terminal.</p>
 						</article>
 					</div>
 				</section>
@@ -229,8 +234,8 @@ export default function App() {
 				<section className="changelog" id="changelog">
 					<div className="section-head">
 						<h2>Changelog</h2>
-						<a className="text-link" href={GITHUB}>
-							See what's new in Copix →
+						<a className="text-link" href={GITHUB} target="_blank" rel="noreferrer">
+							What’s shipping →
 						</a>
 					</div>
 					<ul>
@@ -245,11 +250,11 @@ export default function App() {
 
 				<section className="research">
 					<p className="research-lead">
-						Copix is an applied product team focused on building the future of software development.
+						Copix is a free desktop coding agent with a matching CLI — built for builders who want speed without giving up their machine.
 					</p>
-					<h2>Recent highlights</h2>
+					<h2>Notes & releases</h2>
 					<div className="post-grid">
-						{posts.map(p => (
+						{notes.map(p => (
 							<a key={p.title} className="post" href={GITHUB} target="_blank" rel="noreferrer">
 								<div className="post-meta">
 									{p.date} · {p.tag}
@@ -261,13 +266,10 @@ export default function App() {
 							</a>
 						))}
 					</div>
-					<a className="text-link" href={GITHUB}>
-						View all posts →
-					</a>
 				</section>
 
 				<section className="closing">
-					<h2>Try Copix now.</h2>
+					<h2>Install Copix. Open a folder. Start.</h2>
 					<div className="hero-cta">
 						<a className="btn primary lg" href={RELEASES} target="_blank" rel="noreferrer">
 							Download for desktop
@@ -285,7 +287,7 @@ export default function App() {
 					<span>Copix</span>
 				</div>
 				<div className="footer-links">
-					<a href={GITHUB}>Product</a>
+					<a href="#product">Product</a>
 					<a href="#changelog">Changelog</a>
 					<a href={RELEASES}>Download</a>
 					<a href={GITHUB}>GitHub</a>
