@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { InteractiveDemo } from '../components/InteractiveDemo';
 import { SiteNav } from '../components/SiteNav';
 import { useAuth } from '../lib/auth';
 import { detectPlatform, GITHUB, RELEASES } from '../lib/platform';
+import { scrollToHash } from '../lib/scroll';
 
 const models = ['qwen2.5:3b', 'qwen2.5-coder:7b', 'mistral:7b', 'qwen3.5:4b', 'Auto'];
 
@@ -20,11 +21,20 @@ export default function Landing() {
 	const platform = useMemo(() => detectPlatform(), []);
 	const [copied, setCopied] = useState(false);
 
+	const location = useLocation();
+
 	useEffect(() => {
 		document.title = platform.isKo
 			? 'Copix — AI 코딩 에이전트'
 			: 'Copix — Build software with Copix';
 	}, [platform.isKo]);
+
+	useEffect(() => {
+		if (location.hash) {
+			const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+			window.setTimeout(() => scrollToHash(location.hash, reduced ? 'auto' : 'smooth'), 40);
+		}
+	}, [location.hash]);
 	const t = platform.isKo
 		? {
 				kicker: 'AI 코딩 에이전트',

@@ -36,7 +36,8 @@ body {
 a { color: inherit; text-decoration: none; }
 button, .btn { font: inherit; }
 
-.page { min-height: 100vh; }
+.page { min-height: 100vh; overflow-x: clip; }
+section[id] { scroll-margin-top: calc(var(--nav-h) + 12px); }
 
 .nav {
 	position: sticky;

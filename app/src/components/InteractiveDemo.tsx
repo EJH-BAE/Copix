@@ -59,12 +59,12 @@ export function InteractiveDemo() {
 		let i = 0;
 		const id = window.setInterval(() => {
 			i += 1;
-			setItems(script.slice(0, i) as DemoItem[]);
+			setItems(script.slice(0, i));
 			if (i >= script.length) {
 				window.clearInterval(id);
 				setPlaying(false);
 			}
-		}, 650);
+		}, 520);
 		return () => window.clearInterval(id);
 	}, [playing]);
 
