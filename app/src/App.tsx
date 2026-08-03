@@ -1,4 +1,5 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import { ErrorBoundary } from './components/ErrorBoundary';
 import { AuthProvider } from './lib/auth';
 import Landing from './pages/Landing';
 import Login from './pages/Login';
@@ -11,14 +12,16 @@ export default function App() {
 	return (
 		<AuthProvider>
 			<BrowserRouter basename={basename}>
-				<Routes>
-					<Route path="/" element={<Landing />} />
-					<Route path="/login" element={<Login />} />
-					<Route path="/signup" element={<Signup />} />
-					<Route path="/auth/callback" element={<AuthCallback />} />
-					<Route path="/account" element={<Account />} />
-					<Route path="*" element={<Navigate to="/" replace />} />
-				</Routes>
+				<ErrorBoundary>
+					<Routes>
+						<Route path="/" element={<Landing />} />
+						<Route path="/login" element={<Login />} />
+						<Route path="/signup" element={<Signup />} />
+						<Route path="/auth/callback" element={<AuthCallback />} />
+						<Route path="/account" element={<Account />} />
+						<Route path="*" element={<Navigate to="/" replace />} />
+					</Routes>
+				</ErrorBoundary>
 			</BrowserRouter>
 		</AuthProvider>
 	);

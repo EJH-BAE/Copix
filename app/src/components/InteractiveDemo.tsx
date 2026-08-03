@@ -1,8 +1,15 @@
-import { FormEvent, useEffect, useState } from 'react';
+import {
+	FormEvent,
+	useEffect,
+	useRef,
+	useState,
+	type Dispatch,
+	type SetStateAction,
+} from 'react';
 
-type StatusLine = { kind: 'status'; text: string };
+type StatusLine = { kind: 'status'; text: string; done?: boolean };
 type FilePill = { kind: 'file'; name: string; delta: string };
-type Bubble = { kind: 'user' | 'agent'; text: string };
+type Bubble = { kind: 'user' | 'agent'; text: string; streaming?: boolean };
 type Question = {
 	kind: 'question';
 	title: string;
@@ -12,86 +19,377 @@ type Question = {
 };
 type DemoItem = StatusLine | FilePill | Bubble | Question;
 
-const history = [
-	{ title: 'Landing page creation', when: '2h', done: true },
-	{ title: 'Mission Control Plan', when: 'Now', done: false },
-	{ title: 'PyTorch MNIST Experiment', when: '1d', done: true },
-	{ title: 'Bioinformatics Tools', when: '3d', done: true },
-];
+type EditorSnap = {
+	tab: string;
+	path: string;
+	title: string;
+	body: string[];
+	tasksDone: number;
+};
 
-const tasks = [
-	'Add expose modes to useAppStore.ts',
-	'Create MissionControlView.tsx',
-	'Update AppManager.tsx for triggers',
-];
+type SceneId = 'studio' | 'cli';
 
-const script: DemoItem[] = [
-	{ kind: 'user', text: 'Plan a Mission Control interface for macOS Studio' },
-	{ kind: 'status', text: 'Thinking for 2s' },
-	{ kind: 'status', text: 'Reading AppManager.tsx' },
-	{ kind: 'status', text: 'Searched for expose patterns' },
-	{ kind: 'file', name: 'feature-prd.md', delta: '+68' },
+const scenes: Record<
+	SceneId,
 	{
-		kind: 'question',
-		title: 'Question',
-		prompt: 'How should Mission Control be triggered?',
-		options: [
-			'Gesture (swipe up with 3 fingers)',
-			'Keyboard shortcut (F3 or ⌘F3)',
-			'Both keyboard and menu button',
-		],
-		selected: null,
-	},
-];
-
-export function InteractiveDemo() {
-	const [items, setItems] = useState<DemoItem[]>([]);
-	const [input, setInput] = useState('');
-	const [playing, setPlaying] = useState(true);
-	const [answered, setAnswered] = useState(false);
-	const [activeTask, setActiveTask] = useState(0);
-
-	useEffect(() => {
-		if (!playing) return;
-		setItems([]);
-		setAnswered(false);
-		setActiveTask(0);
-		let i = 0;
-		const id = window.setInterval(() => {
-			i += 1;
-			setItems(script.slice(0, i));
-			if (i >= script.length) {
-				window.clearInterval(id);
-				setPlaying(false);
-			}
-		}, 520);
-		return () => window.clearInterval(id);
-	}, [playing]);
-
-	function chooseOption(index: number) {
-		setItems((prev) =>
-			prev.map((item) =>
-				item.kind === 'question' ? { ...item, selected: index } : item,
-			),
-		);
+		label: string;
+		chrome: string;
+		history: { title: string; when: string; done: boolean }[];
+		tasks: string[];
+		script: DemoItem[];
+		editorSnaps: EditorSnap[];
+		defaultChoice: number;
+		reply: (choice: string) => string;
+		followUps: DemoItem[];
 	}
-
-	function continueAfterQuestion() {
-		const q = items.find((i): i is Question => i.kind === 'question');
-		const choice = q && q.selected != null ? q.options[q.selected] : 'Both keyboard and menu button';
-		setAnswered(true);
-		setActiveTask(1);
-		setItems((prev) => [
-			...prev,
-			{ kind: 'status', text: 'Updating plan from your choice' },
+> = {
+	studio: {
+		label: 'Desktop',
+		chrome: 'Copix Desktop',
+		history: [
+			{ title: 'Landing page creation', when: '2h', done: true },
+			{ title: 'Mission Control Plan', when: 'Now', done: false },
+			{ title: 'PyTorch MNIST Experiment', when: '1d', done: true },
+			{ title: 'Bioinformatics Tools', when: '3d', done: true },
+		],
+		tasks: [
+			'Add expose modes to useAppStore.ts',
+			'Create MissionControlView.tsx',
+			'Update AppManager.tsx for triggers',
+		],
+		script: [
+			{ kind: 'user', text: 'Plan a Mission Control interface for macOS Studio' },
+			{ kind: 'status', text: 'Thinking' },
+			{ kind: 'status', text: 'Reading AppManager.tsx' },
+			{ kind: 'status', text: 'Searched codebase for expose patterns' },
+			{ kind: 'file', name: 'feature-prd.md', delta: '+68' },
 			{
 				kind: 'agent',
-				text: `Got it — trigger via ${choice}. I’ll wire MenuBar + F3 and keep the grid overview in MissionControlView.`,
+				text: 'Drafted a Mission Control plan: grid overview of open windows, MenuBar entry, and keyboard trigger. One choice left before I build.',
 			},
+			{
+				kind: 'question',
+				title: 'Question',
+				prompt: 'How should Mission Control be triggered?',
+				options: [
+					'Gesture (swipe up with 3 fingers)',
+					'Keyboard shortcut (F3 or ⌘F3)',
+					'Both keyboard and menu button',
+				],
+				selected: null,
+			},
+		],
+		editorSnaps: [
+			{
+				tab: 'feature-prd.md',
+				path: 'Plans › feature-prd.md',
+				title: 'Mission Control Interface',
+				body: [
+					'Overview of open Studio windows in a grid.',
+					'Triggers undecided — waiting on your choice.',
+					'Reuse expose-style layout from AppManager.',
+				],
+				tasksDone: 0,
+			},
+			{
+				tab: 'MissionControlView.tsx',
+				path: 'src › MissionControlView.tsx',
+				title: 'MissionControlView',
+				body: [
+					'export function MissionControlView() {',
+					'  return <ExposeGrid triggers={["menu", "F3"]} />',
+					'}',
+				],
+				tasksDone: 2,
+			},
+			{
+				tab: 'AppManager.tsx',
+				path: 'src › AppManager.tsx',
+				title: 'AppManager triggers',
+				body: [
+					'registerShortcut("F3", openMissionControl)',
+					'menuBar.add("Window › Mission Control")',
+				],
+				tasksDone: 3,
+			},
+		],
+		defaultChoice: 2,
+		reply: (choice) =>
+			`Got it — trigger via ${choice}. Wiring MenuBar + F3 and keeping the grid overview in MissionControlView.`,
+		followUps: [
 			{ kind: 'file', name: 'AppManager.tsx', delta: '+24' },
 			{ kind: 'file', name: 'MissionControlView.tsx', delta: '+112' },
-		]);
+			{ kind: 'status', text: 'Ran tests · 3 passed', done: true },
+		],
+	},
+	cli: {
+		label: 'CLI',
+		chrome: 'copix agent',
+		history: [
+			{ title: 'fix auth OTP blowout', when: 'Now', done: false },
+			{ title: 'Ship install CTAs', when: '5h', done: true },
+			{ title: 'Ollama model fallback', when: '1d', done: true },
+		],
+		tasks: [
+			'Reproduce layout on 320px width',
+			'Pin OTP to CSS grid',
+			'Verify signup → Desktop handoff',
+		],
+		script: [
+			{ kind: 'user', text: 'The login OTP row stretches the whole page — fix it' },
+			{ kind: 'status', text: 'Thinking' },
+			{ kind: 'status', text: 'Reading OtpInput.tsx' },
+			{ kind: 'status', text: 'Checked auth form CSS containment' },
+			{ kind: 'file', name: 'OtpInput.tsx', delta: '+18' },
+			{
+				kind: 'agent',
+				text: 'Root cause: flex cells grew past the card. I’ll switch the OTP row to a 6-column grid and cap each digit. Prefer password-first with email code as 2FA only — confirm?',
+			},
+			{
+				kind: 'question',
+				title: 'Question',
+				prompt: 'Keep email codes as 2FA after password?',
+				options: [
+					'Yes — password then 6-digit email code',
+					'Code-only login (no password)',
+					'Password only (skip email code)',
+				],
+				selected: null,
+			},
+		],
+		editorSnaps: [
+			{
+				tab: 'OtpInput.tsx',
+				path: 'app › components › OtpInput.tsx',
+				title: 'OTP containment',
+				body: [
+					'<div className="otp">',
+					'  {digits.map((d, i) => <input size={1} />)}',
+					'</div>',
+				],
+				tasksDone: 1,
+			},
+			{
+				tab: 'index.css',
+				path: 'app › index.css',
+				title: 'OTP grid',
+				body: [
+					'.otp { display: grid;',
+					'  grid-template-columns: repeat(6, minmax(0,1fr)); }',
+					'.otp-cell { width: 100%; min-width: 0; }',
+				],
+				tasksDone: 2,
+			},
+			{
+				tab: 'AuthPanel.tsx',
+				path: 'app › components › AuthPanel.tsx',
+				title: 'Password + 2FA',
+				body: [
+					'step: credentials → verify',
+					'// email code only after password',
+					'navigate("/account")',
+				],
+				tasksDone: 3,
+			},
+		],
+		defaultChoice: 0,
+		reply: (choice) =>
+			`Locked in: ${choice}. OTP grid is contained, auth stays password-first, and the account page points at Desktop + CLI.`,
+		followUps: [
+			{ kind: 'file', name: 'index.css', delta: '+22' },
+			{ kind: 'file', name: 'AuthPanel.tsx', delta: '+9' },
+			{ kind: 'status', text: 'Layout check · 320–1280px ok', done: true },
+		],
+	},
+};
+
+function delay(ms: number, signal: AbortSignal) {
+	return new Promise<void>((resolve, reject) => {
+		if (signal.aborted) {
+			reject(new DOMException('aborted', 'AbortError'));
+			return;
+		}
+		const id = window.setTimeout(() => resolve(), ms);
+		const onAbort = () => {
+			window.clearTimeout(id);
+			reject(new DOMException('aborted', 'AbortError'));
+		};
+		signal.addEventListener('abort', onAbort, { once: true });
+	});
+}
+
+async function typeIntoLastAgent(
+	setItems: Dispatch<SetStateAction<DemoItem[]>>,
+	full: string,
+	signal: AbortSignal,
+) {
+	setItems((prev) => [...prev, { kind: 'agent', text: '', streaming: true }]);
+	const step = Math.max(1, Math.ceil(full.length / 40));
+	for (let i = 0; i <= full.length; i += step) {
+		const slice = full.slice(0, Math.min(full.length, i));
+		setItems((prev) => {
+			const next = prev.slice();
+			const last = next[next.length - 1];
+			if (last?.kind === 'agent') {
+				next[next.length - 1] = {
+					kind: 'agent',
+					text: slice,
+					streaming: i < full.length,
+				};
+			}
+			return next;
+		});
+		await delay(24, signal);
 	}
+	setItems((prev) => {
+		const next = prev.slice();
+		const last = next[next.length - 1];
+		if (last?.kind === 'agent') {
+			next[next.length - 1] = { kind: 'agent', text: full, streaming: false };
+		}
+		return next;
+	});
+}
+
+export function InteractiveDemo() {
+	const [sceneId, setSceneId] = useState<SceneId>('studio');
+	const scene = scenes[sceneId];
+	const [items, setItems] = useState<DemoItem[]>([]);
+	const [input, setInput] = useState('');
+	const [runId, setRunId] = useState(0);
+	const [phase, setPhase] = useState<'playing' | 'awaiting' | 'done'>('playing');
+	const [answered, setAnswered] = useState(false);
+	const [editor, setEditor] = useState<EditorSnap>(scene.editorSnaps[0]);
+	const [panel, setPanel] = useState(1);
+	const [building, setBuilding] = useState(false);
+	const threadRef = useRef<HTMLDivElement>(null);
+	const answeredRef = useRef(false);
+	const finishingRef = useRef(false);
+	const sceneRef = useRef(scene);
+	const abortRef = useRef<AbortController | null>(null);
+	const selectedRef = useRef<number | null>(null);
+	sceneRef.current = scene;
+
+	useEffect(() => {
+		answeredRef.current = answered;
+	}, [answered]);
+
+	useEffect(() => {
+		const el = threadRef.current;
+		if (!el) return;
+		el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' });
+	}, [items, phase]);
+
+	async function completeAnswer(forcedIndex: number | null) {
+		if (finishingRef.current || answeredRef.current) return;
+		finishingRef.current = true;
+		const current = sceneRef.current;
+		const signal = abortRef.current?.signal;
+		if (!signal || signal.aborted) return;
+
+		const choiceIndex = forcedIndex ?? selectedRef.current ?? current.defaultChoice;
+		selectedRef.current = choiceIndex;
+		const choice =
+			current.script.find((i): i is Question => i.kind === 'question')?.options[choiceIndex] ??
+			'your choice';
+
+		setItems((prev) =>
+			prev.map((item) =>
+				item.kind === 'question' ? { ...item, selected: choiceIndex } : item,
+			),
+		);
+		setAnswered(true);
+		answeredRef.current = true;
+		setPhase('playing');
+		setBuilding(true);
+
+		setItems((prev) => [
+			...prev,
+			{ kind: 'status', text: 'Updating plan from your choice', done: false },
+		]);
+		try {
+			await delay(420, signal);
+			setItems((prev) => {
+				const next = prev.slice();
+				const last = next[next.length - 1];
+				if (last?.kind === 'status') next[next.length - 1] = { ...last, done: true };
+				return next;
+			});
+			await typeIntoLastAgent(setItems, current.reply(choice), signal);
+			setItems((prev) => [...prev, ...current.followUps]);
+			setEditor(current.editorSnaps[1] ?? current.editorSnaps[0]);
+			await delay(650, signal);
+			setEditor(current.editorSnaps[2] ?? current.editorSnaps[0]);
+			setBuilding(false);
+			setPhase('done');
+		} catch {
+			/* aborted on replay/scene switch */
+		}
+	}
+
+	useEffect(() => {
+		const ac = new AbortController();
+		abortRef.current = ac;
+		const { signal } = ac;
+		const current = scenes[sceneId];
+
+		async function play() {
+			setItems([]);
+			setAnswered(false);
+			answeredRef.current = false;
+			finishingRef.current = false;
+			selectedRef.current = null;
+			setEditor(current.editorSnaps[0]);
+			setPanel(1);
+			setBuilding(false);
+			setPhase('playing');
+
+			for (const step of current.script) {
+				if (signal.aborted) return;
+				if (step.kind === 'status') {
+					setItems((prev) => [...prev, { ...step, done: false }]);
+					await delay(400, signal);
+					setItems((prev) => {
+						const next = prev.slice();
+						const last = next[next.length - 1];
+						if (last?.kind === 'status') next[next.length - 1] = { ...last, done: true };
+						return next;
+					});
+					await delay(160, signal);
+					continue;
+				}
+				if (step.kind === 'file') {
+					setItems((prev) => [...prev, step]);
+					await delay(360, signal);
+					continue;
+				}
+				if (step.kind === 'agent') {
+					await typeIntoLastAgent(setItems, step.text, signal);
+					await delay(220, signal);
+					continue;
+				}
+				if (step.kind === 'question') {
+					setItems((prev) => [...prev, { ...step, selected: null }]);
+					setPhase('awaiting');
+					await delay(4500, signal);
+					if (!answeredRef.current && !signal.aborted) {
+						await completeAnswer(current.defaultChoice);
+					}
+					return;
+				}
+				setItems((prev) => [...prev, step]);
+				await delay(320, signal);
+			}
+		}
+
+		play().catch((err) => {
+			if (err instanceof DOMException && err.name === 'AbortError') return;
+			console.error(err);
+		});
+
+		return () => ac.abort();
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [runId, sceneId]);
 
 	function onSubmit(e: FormEvent) {
 		e.preventDefault();
@@ -101,30 +399,66 @@ export function InteractiveDemo() {
 		setItems((prev) => [
 			...prev,
 			{ kind: 'user', text },
-			{ kind: 'status', text: 'Thinking for 1s' },
-			{ kind: 'status', text: 'web_search · gathering references' },
+			{ kind: 'status', text: 'Thinking', done: true },
+			{ kind: 'status', text: 'web_search · gathering references', done: true },
 			{
 				kind: 'agent',
-				text: 'Sign in, then continue in Copix Desktop or the CLI with your account.',
+				text: 'Sign in, then continue in Copix Desktop or the CLI with your account — same agents, local models.',
 			},
 		]);
+		setPhase('done');
+	}
+
+	function switchScene(id: SceneId) {
+		if (id === sceneId) {
+			setRunId((n) => n + 1);
+			return;
+		}
+		setSceneId(id);
+		setRunId((n) => n + 1);
 	}
 
 	return (
 		<div className="demo demo-studio" aria-label="Copix agent simulation">
+			<div className="demo-scene-switch" role="tablist" aria-label="Demo scene">
+				{(Object.keys(scenes) as SceneId[]).map((id) => (
+					<button
+						key={id}
+						type="button"
+						role="tab"
+						aria-selected={sceneId === id}
+						className={sceneId === id ? 'active' : ''}
+						onClick={() => switchScene(id)}
+					>
+						{scenes[id].label}
+					</button>
+				))}
+			</div>
+
 			<div className="demo-chrome">
 				<span /><span /><span />
-				<div className="demo-title">Copix Desktop</div>
-				<div className="demo-chrome-meta">Grok 4.5 · Plan</div>
+				<div className="demo-title">{scene.chrome}</div>
+				<div className="demo-chrome-meta">
+					{building ? <em className="demo-pulse">Building…</em> : null}
+					Grok 4.5 · Plan
+				</div>
+			</div>
+
+			<div className="demo-mobile-tabs" aria-hidden>
+				<button type="button" className={panel === 0 ? 'active' : ''} onClick={() => setPanel(0)}>Agents</button>
+				<button type="button" className={panel === 1 ? 'active' : ''} onClick={() => setPanel(1)}>Chat</button>
+				<button type="button" className={panel === 2 ? 'active' : ''} onClick={() => setPanel(2)}>Plan</button>
 			</div>
 
 			<div className="demo-layout">
-				<aside className="demo-rail">
+				<aside className={`demo-rail ${panel === 0 ? 'show-mobile' : ''}`}>
 					<div className="demo-rail-label">Agents</div>
 					<ul>
-						{history.map((h) => (
+						{scene.history.map((h) => (
 							<li key={h.title} className={!h.done ? 'active' : ''}>
-								<span className={`demo-check ${h.done ? 'done' : ''}`} />
+								<span
+									className={`demo-check ${h.done || (!h.done && phase === 'done') ? 'done' : ''}`}
+								/>
 								<div>
 									<strong>{h.title}</strong>
 									<em>{h.when}</em>
@@ -134,21 +468,35 @@ export function InteractiveDemo() {
 					</ul>
 				</aside>
 
-				<section className="demo-chat">
-					<div className="demo-thread">
+				<section className={`demo-chat ${panel === 1 ? 'show-mobile' : ''}`}>
+					<div className="demo-thread" ref={threadRef}>
 						{items.map((item, idx) => {
 							if (item.kind === 'status') {
 								return (
-									<div key={idx} className="demo-status">
+									<div key={idx} className={`demo-status ${item.done ? 'done' : 'live'}`}>
+										<span className="demo-status-dot" aria-hidden />
 										{item.text}
+										{!item.done ? <span className="demo-ellipsis" aria-hidden /> : null}
 									</div>
 								);
 							}
 							if (item.kind === 'file') {
 								return (
-									<div key={idx} className="demo-file-pill">
+									<button
+										key={idx}
+										type="button"
+										className="demo-file-pill"
+										onClick={() => {
+											const snap =
+												scene.editorSnaps.find((s) => s.tab === item.name) ||
+												scene.editorSnaps[0];
+											setEditor(snap);
+											setPanel(2);
+										}}
+									>
+										<span className="demo-file-icon" aria-hidden />
 										{item.name} <span>{item.delta}</span>
-									</div>
+									</button>
 								);
 							}
 							if (item.kind === 'question') {
@@ -162,7 +510,17 @@ export function InteractiveDemo() {
 													<button
 														type="button"
 														className={item.selected === oi ? 'selected' : ''}
-														onClick={() => chooseOption(oi)}
+														disabled={answered}
+														onClick={() => {
+															selectedRef.current = oi;
+															setItems((prev) =>
+																prev.map((row) =>
+																	row.kind === 'question'
+																		? { ...row, selected: oi }
+																		: row,
+																),
+															);
+														}}
 													>
 														<span>{oi + 1}</span>
 														{opt}
@@ -172,13 +530,17 @@ export function InteractiveDemo() {
 										</ol>
 										{!answered ? (
 											<div className="demo-question-actions">
-												<button type="button" className="demo-skip" onClick={() => { setAnswered(true); }}>
+												<button
+													type="button"
+													className="demo-skip"
+													onClick={() => void completeAnswer(scene.defaultChoice)}
+												>
 													Skip
 												</button>
 												<button
 													type="button"
 													className="demo-continue"
-													onClick={continueAfterQuestion}
+													onClick={() => void completeAnswer(null)}
 												>
 													Continue
 												</button>
@@ -192,7 +554,10 @@ export function InteractiveDemo() {
 									<span className={`demo-tag ${item.kind === 'agent' ? 'agent' : ''}`}>
 										{item.kind === 'user' ? 'You' : 'Copix'}
 									</span>
-									<p>{item.text}</p>
+									<p>
+										{item.text}
+										{item.streaming ? <span className="demo-caret" aria-hidden /> : null}
+									</p>
 								</div>
 							);
 						})}
@@ -211,31 +576,53 @@ export function InteractiveDemo() {
 					<div className="demo-composer-meta">
 						<span className="demo-mode">Plan</span>
 						<span className="demo-model">Grok 4.5</span>
-						<button type="button" className="demo-replay" onClick={() => setPlaying(true)}>
+						<button type="button" className="demo-replay" onClick={() => setRunId((n) => n + 1)}>
 							Replay
 						</button>
 					</div>
 				</section>
 
-				<aside className="demo-editor">
+				<aside className={`demo-editor ${panel === 2 ? 'show-mobile' : ''}`}>
 					<div className="demo-tabs">
-						<span className="active">feature-prd.md</span>
-						<span>presence.ts</span>
+						{scene.editorSnaps.map((s) => (
+							<button
+								key={s.tab}
+								type="button"
+								className={editor.tab === s.tab ? 'active' : ''}
+								onClick={() => setEditor(s)}
+							>
+								{s.tab}
+							</button>
+						))}
 					</div>
 					<div className="demo-editor-bar">
-						<span>Plans › feature-prd.md</span>
-						<button type="button" className="demo-build">Build</button>
+						<span>{editor.path}</span>
+						<button type="button" className="demo-build" disabled={building}>
+							{building ? 'Building…' : 'Build'}
+						</button>
 					</div>
-					<div className="demo-doc">
-						<h3>Mission Control Interface</h3>
-						<p>Grid view of open windows with MenuBar and F3 triggers.</p>
-						<p className="muted">View behavior mirrors expose-style overview in Studio.</p>
+					<div className="demo-doc" key={editor.tab}>
+						<h3>{editor.title}</h3>
+						{editor.body.map((line) => (
+							<p key={line} className={/[;{}=]|return |className|\.otp/.test(line) ? 'code' : ''}>
+								{line}
+							</p>
+						))}
 					</div>
 					<div className="demo-tasks">
-						<div className="demo-tasks-head">{tasks.length} Tasks</div>
+						<div className="demo-tasks-head">{scene.tasks.length} Tasks</div>
 						<ul>
-							{tasks.map((t, i) => (
-								<li key={t} className={i < activeTask ? 'done' : i === activeTask ? 'current' : ''}>
+							{scene.tasks.map((t, i) => (
+								<li
+									key={t}
+									className={
+										i < editor.tasksDone
+											? 'done'
+											: i === editor.tasksDone
+												? 'current'
+												: ''
+									}
+								>
 									<span />
 									{t}
 								</li>

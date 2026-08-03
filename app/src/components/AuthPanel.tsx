@@ -47,15 +47,16 @@ export function AuthPanel({ mode }: { mode: Mode }) {
 
 	async function verify(e?: FormEvent) {
 		e?.preventDefault();
-		if (code.length !== 6 || busy || verifyLock.current) return;
+		const trimmed = code.replace(/\D/g, '').slice(0, 6);
+		if (trimmed.length !== 6 || busy || verifyLock.current) return;
 		verifyLock.current = true;
 		setBusy(true);
 		setError('');
 		try {
 			if (mode === 'signup') {
-				await auth.verifySignup(email.trim(), code);
+				await auth.verifySignup(email.trim(), trimmed);
 			} else {
-				await auth.verifyLogin(email.trim(), code, challengeId);
+				await auth.verifyLogin(email.trim(), trimmed, challengeId);
 			}
 			navigate('/account', { replace: true });
 		} catch (err) {
@@ -68,11 +69,13 @@ export function AuthPanel({ mode }: { mode: Mode }) {
 	}
 
 	useEffect(() => {
-		if (step === 'verify' && code.length === 6 && !busy && !verifyLock.current) {
+		if (step !== 'verify' || code.length !== 6 || busy || verifyLock.current) return;
+		const id = window.setTimeout(() => {
 			void verify();
-		}
+		}, 80);
+		return () => window.clearTimeout(id);
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [code, step]);
+	}, [code, step, busy]);
 
 	async function resend() {
 		setBusy(true);

@@ -25,7 +25,7 @@ export function SiteNav() {
 					</>
 				) : (
 					<>
-						<Link className="btn ghost" to="/login">Sign in</Link>
+						<Link className="btn ghost nav-signin" to="/login">Sign in</Link>
 						<Link className="btn primary" to="/signup">Sign up</Link>
 					</>
 				)}
