@@ -24,15 +24,15 @@ This repository does **not** publish Copix product source code.
 
 | Surface | Where |
 | :-- | :-- |
-| **Website + Copix Web** | [ejh-bae.github.io/Copix](https://ejh-bae.github.io/Copix/) |
+| **Website / account** | [ejh-bae.github.io/Copix](https://ejh-bae.github.io/Copix/) — sign in for Desktop & CLI |
 | **Desktop (macOS / Windows)** | [GitHub Releases](https://github.com/EJH-BAE/Copix/releases) |
-| **CLI** | Install from the [website](https://ejh-bae.github.io/Copix/#install) (OS-aware) |
+| **CLI** | Sign in from the app after creating an account on the website |
 
 ## Product
 
 - **Desktop** — Copix Studio for macOS and Windows  
 - **CLI** — same agent in the terminal  
-- **Copix Web** — signed-in browser agent (password + 6-digit 2FA)
+- **Account** — Google, GitHub, Apple, or email (one login for Desktop and CLI)
 
 Local models via [Ollama](https://ollama.com). Preferences live in `~/Copix/settings.json` on your machine.
 
