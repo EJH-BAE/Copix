@@ -18,23 +18,30 @@
 ---
 
 **Copix is free to use and not open source.**  
-This repository does **not** publish Copix product source code.
+No accounts. Desktop and CLI run locally with [Ollama](https://ollama.com).
 
 ## Get Copix
 
-| Surface | Where |
+| Surface | Install |
 | :-- | :-- |
-| **Website / account** | [ejh-bae.github.io/Copix](https://ejh-bae.github.io/Copix/) — sign in for Desktop & CLI |
+| **Website** | [ejh-bae.github.io/Copix](https://ejh-bae.github.io/Copix/) |
 | **Desktop (macOS / Windows)** | [GitHub Releases](https://github.com/EJH-BAE/Copix/releases) |
-| **CLI** | Sign in from the app after creating an account on the website |
+| **CLI (macOS / Linux)** | `curl -fsSL https://raw.githubusercontent.com/EJH-BAE/Copix/main/cli/install.sh \| bash` |
+| **CLI (Windows)** | `irm https://raw.githubusercontent.com/EJH-BAE/Copix/main/cli/install.ps1 \| iex` |
+
+```bash
+ollama pull qwen2.5:3b
+copix doctor
+copix
+```
 
 ## Product
 
 - **Desktop** — Copix Studio for macOS and Windows  
-- **CLI** — same agent in the terminal  
-- **Account** — Google, GitHub, Apple, or email (one login for Desktop and CLI)
+- **CLI** — same agent in the terminal (standalone; no account)  
+- **Local models** — Ollama-first; preferences in `~/Copix/settings.json`
 
-Local models via [Ollama](https://ollama.com). Preferences live in `~/Copix/settings.json` on your machine.
+See [cli/README.md](cli/README.md) for slash commands and Desktop session sync.
 
 ## License
 
