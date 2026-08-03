@@ -16,7 +16,8 @@ const GITHUB = 'https://github.com/EJH-BAE/Copix';
 const RELEASES = `${GITHUB}/releases`;
 const MAC_DMG = `${GITHUB}/releases/download/v4.2.0_macOS/Copix-4.2.0-macOS-arm64.dmg`;
 const WIN_EXE = `${GITHUB}/releases/download/v4.1.0/Copix-4.1.0-Windows-x64.exe`;
-const CLI_INSTALL = 'curl -fsSL https://raw.githubusercontent.com/EJH-BAE/Copix/main/cli/install.sh | bash';
+/** CLI is distributed via Releases / Studio — not from public source. */
+const CLI_INSTALL = `# Copix CLI ships with Studio releases — see ${RELEASES}`;
 
 export function detectPlatform(
 	ua = typeof navigator !== 'undefined' ? navigator.userAgent : '',
@@ -73,12 +74,8 @@ export function detectPlatform(
 				: 'OS not detected precisely — pick the matching build on the releases page.';
 
 	const cliHint = isKo
-		? os === 'windows'
-			? 'Windows에서는 WSL 또는 Git Bash에서 실행하세요.'
-			: '터미널에 붙여넣고 Enter를 누르세요.'
-		: os === 'windows'
-			? 'Run this in WSL or Git Bash on Windows.'
-			: 'Paste into your terminal and press Enter.';
+		? 'CLI는 공개 소스로 배포되지 않습니다. Studio 릴리스와 Copix Web을 이용하세요.'
+		: 'CLI is not published as public source. Use Studio releases or Copix Web.';
 
 	return {
 		os,

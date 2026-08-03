@@ -81,7 +81,7 @@ export default function Landing() {
 
 	async function copyCli() {
 		try {
-			await navigator.clipboard.writeText(platform.cliCommand);
+			await navigator.clipboard.writeText(platform.desktopUrl);
 			setCopied(true);
 			window.setTimeout(() => setCopied(false), 1600);
 		} catch {
@@ -178,10 +178,15 @@ export default function Landing() {
 					<div>
 						<h3>{t.installTitle}</h3>
 						<p className="install-hint">{platform.cliHint}</p>
-						<pre className="install"><code>{platform.cliCommand}</code></pre>
-						<button type="button" className="btn ghost" onClick={() => void copyCli()}>
-							{copied ? t.copied : t.copy}
-						</button>
+						<pre className="install"><code>{platform.desktopUrl}</code></pre>
+						<div className="install-actions">
+							<a className="btn primary" href={platform.desktopUrl} target="_blank" rel="noreferrer">
+								{platform.desktopLabel}
+							</a>
+							<button type="button" className="btn ghost" onClick={() => void copyCli()}>
+								{copied ? t.copied : t.copy}
+							</button>
+						</div>
 					</div>
 				</section>
 
