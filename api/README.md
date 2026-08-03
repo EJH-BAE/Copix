@@ -1,36 +1,40 @@
 # Copix Auth & Web API
 
-Backend for Copix Web: custom email OTP, Google / GitHub / Apple OAuth, and the logged-in agent chat proxy.
+Backend for Copix Web: password auth + 6-digit email 2FA, Google / GitHub / Apple OAuth, and the logged-in agent chat proxy (SSE streaming).
 
 ## Features
 
-- **Email sign-in** with a **custom 6-digit Copix template** (`emails/otp.html`) — not Supabase default mailers
+- **Password first**, then **6-digit email 2FA** (custom templates in `emails/` — not Supabase)
 - **OAuth**: Google, GitHub, Sign in with Apple (enable via env)
 - **Sessions**: JWT (`Authorization: Bearer …`)
-- **Agent**: `/agent/chats` for Copix Web (proxies to Ollama)
+- **Agent**: `/agent/chats` + `/agent/chats/:id/stream` (SSE → Ollama)
 
 ## Quick start
 
+From the repo root on `public_site`:
+
 ```bash
-cd api
-cp .env.example .env
-npm install
-npm run dev
+./dev.sh
 ```
 
-API listens on `http://localhost:8787`.
-
-Point the website at it:
+Or two terminals:
 
 ```bash
-cd ../app
-echo 'VITE_API_URL=http://localhost:8787' > .env
-npm run dev
+cd api && npm install && npm run dev   # frees :8787 if needed, then listens
+cd app && npm install && npm run dev   # Vite proxies /auth /agent /health → :8787
+```
+
+You do **not** need `VITE_API_URL` for local Vite — the app uses a same-origin proxy.
+
+API: `http://127.0.0.1:8787` · Site: `http://localhost:5173`
+
+If you see `EADDRINUSE`:
+
+```bash
+cd api && npm run free-port && npm run dev
 ```
 
 ## Email (SMTP)
-
-Configure any SMTP provider (Resend, Postmark, SES, …):
 
 ```env
 SMTP_HOST=smtp.resend.com
@@ -41,11 +45,19 @@ SMTP_PASS=re_xxx
 EMAIL_FROM="Copix <noreply@yourdomain.com>"
 ```
 
-Until SMTP is set, `/auth/email/start` returns `demoCode` so local development still works. The HTML/text templates in `emails/` are always used when mail is sent.
+Until SMTP is set, signup/login return `demoCode` so local 2FA still works.
+
+## Auth routes
+
+| Method | Path | Purpose |
+| --- | --- | --- |
+| POST | `/auth/signup` | Email + password → send 2FA code |
+| POST | `/auth/signup/verify` | Verify code → JWT |
+| POST | `/auth/login` | Email + password → 2FA challenge |
+| POST | `/auth/login/verify` | Verify 2FA → JWT |
+| POST | `/auth/2fa/resend` | Resend code |
 
 ## OAuth
-
-Set the provider credentials in `.env`, then add redirect URIs:
 
 | Provider | Redirect URI |
 | --- | --- |
@@ -53,7 +65,7 @@ Set the provider credentials in `.env`, then add redirect URIs:
 | GitHub | `{API_PUBLIC_URL}/auth/callback/github` |
 | Apple | `{API_PUBLIC_URL}/auth/callback/apple` |
 
-Also set `APP_URL` to your site origin (e.g. `https://ejh-bae.github.io/Copix`).
+Set `APP_URL` to your site origin (e.g. `https://ejh-bae.github.io/Copix`).
 
 ## Deploy
 

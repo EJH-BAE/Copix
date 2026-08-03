@@ -1029,6 +1029,28 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 12px); }
 	font-size: 13px;
 	overflow-wrap: anywhere;
 }
+.auth-api-banner {
+	display: grid;
+	gap: 10px;
+	margin: 0 0 16px;
+	padding: 12px 14px;
+	border-radius: 12px;
+	background: #fff7ed;
+	border: 1px solid #fdba74;
+	color: #9a3412;
+	font-size: 13px;
+}
+.auth-api-banner p { margin: 0; line-height: 1.45; }
+.auth-api-banner code {
+	display: inline-block;
+	margin-top: 4px;
+	padding: 2px 6px;
+	border-radius: 6px;
+	background: rgba(255,255,255,0.7);
+	font-family: var(--font-mono);
+	font-size: 12px;
+	color: #7c2d12;
+}
 .auth-info { color: #15803d; font-size: 13px; }
 .auth-error { color: #b91c1c; font-size: 13px; }
 .auth-switch { margin: 18px 0 0; color: var(--ink-3); font-size: 13px; }

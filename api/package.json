@@ -4,6 +4,8 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "free-port": "node scripts/free-port.mjs",
+    "predev": "node scripts/free-port.mjs",
     "dev": "node --watch src/index.js",
     "start": "node src/index.js"
   },

@@ -7,7 +7,7 @@ import {
 	useState,
 	type ReactNode,
 } from 'react';
-import { apiBase, apiFetch } from './api';
+import { apiFetch, apiOrigin } from './api';
 
 export type CopixUser = {
 	id: string;
@@ -172,7 +172,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 	}, []);
 
 	const oauthUrl = useCallback((provider: 'google' | 'github' | 'apple', next = '/app') => {
-		return `${apiBase()}/auth/oauth/${provider}?next=${encodeURIComponent(next)}`;
+		// OAuth must hit the API origin directly (not the Vite proxy).
+		return `${apiOrigin()}/auth/oauth/${provider}?next=${encodeURIComponent(next)}`;
 	}, []);
 
 	const value = useMemo(

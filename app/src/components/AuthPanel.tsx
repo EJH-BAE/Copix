@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useState } from 'react';
+import { FormEvent, useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { apiFetch } from '../lib/api';
 import { useAuth } from '../lib/auth';
@@ -22,15 +22,31 @@ export function AuthPanel({ mode }: { mode: Mode }) {
 	const [info, setInfo] = useState('');
 	const [demoCode, setDemoCode] = useState('');
 	const [apiDown, setApiDown] = useState(false);
+	const [checkingApi, setCheckingApi] = useState(true);
+	const verifyLock = useRef(false);
 
 	useEffect(() => {
 		document.title = mode === 'signup' ? 'Sign up · Copix' : 'Sign in · Copix';
 	}, [mode]);
 
+	async function pingApi() {
+		setCheckingApi(true);
+		try {
+			await apiFetch('/health');
+			setApiDown(false);
+		} catch {
+			setApiDown(true);
+		} finally {
+			setCheckingApi(false);
+		}
+	}
+
 	useEffect(() => {
-		apiFetch('/health')
-			.then(() => setApiDown(false))
-			.catch(() => setApiDown(true));
+		void pingApi();
+		const id = window.setInterval(() => {
+			void pingApi();
+		}, 8000);
+		return () => window.clearInterval(id);
 	}, []);
 
 	async function submitCredentials(e: FormEvent) {
@@ -40,6 +56,7 @@ export function AuthPanel({ mode }: { mode: Mode }) {
 		setInfo('');
 		setDemoCode('');
 		try {
+			await pingApi();
 			const res =
 				mode === 'signup'
 					? await auth.signup(email.trim(), password, name.trim() || undefined)
@@ -49,6 +66,7 @@ export function AuthPanel({ mode }: { mode: Mode }) {
 			if (res.demoCode) setDemoCode(res.demoCode);
 			setCode('');
 			setStep('verify');
+			verifyLock.current = false;
 		} catch (err) {
 			setError(err instanceof Error ? err.message : String(err));
 		} finally {
@@ -58,7 +76,8 @@ export function AuthPanel({ mode }: { mode: Mode }) {
 
 	async function verify(e?: FormEvent) {
 		e?.preventDefault();
-		if (code.length !== 6 || busy) return;
+		if (code.length !== 6 || busy || verifyLock.current) return;
+		verifyLock.current = true;
 		setBusy(true);
 		setError('');
 		try {
@@ -69,6 +88,7 @@ export function AuthPanel({ mode }: { mode: Mode }) {
 			}
 			navigate('/app', { replace: true });
 		} catch (err) {
+			verifyLock.current = false;
 			setError(err instanceof Error ? err.message : String(err));
 			setCode('');
 		} finally {
@@ -77,7 +97,7 @@ export function AuthPanel({ mode }: { mode: Mode }) {
 	}
 
 	useEffect(() => {
-		if (step === 'verify' && code.length === 6 && !busy) {
+		if (step === 'verify' && code.length === 6 && !busy && !verifyLock.current) {
 			void verify();
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
@@ -92,6 +112,7 @@ export function AuthPanel({ mode }: { mode: Mode }) {
 			setInfo(res.message);
 			if (res.demoCode) setDemoCode(res.demoCode);
 			setCode('');
+			verifyLock.current = false;
 		} catch (err) {
 			setError(err instanceof Error ? err.message : String(err));
 		} finally {
@@ -107,6 +128,8 @@ export function AuthPanel({ mode }: { mode: Mode }) {
 				: 'Email + password first. Then a 6-digit code (2FA).'
 			: 'Step 2 of 2 — enter the 6-digit code from your email.';
 
+	const showApiBanner = import.meta.env.DEV && apiDown && !checkingApi;
+
 	return (
 		<div className="auth-card">
 			<Link to="/" className="auth-brand">
@@ -116,6 +139,19 @@ export function AuthPanel({ mode }: { mode: Mode }) {
 			<p className="auth-step">{step === 'credentials' ? 'Step 1 · Password' : 'Step 2 · Email code'}</p>
 			<h1>{title}</h1>
 			<p className="auth-sub">{subtitle}</p>
+
+			{showApiBanner ? (
+				<div className="auth-api-banner" role="status">
+					<p>
+						API offline — start it in another terminal:
+						<br />
+						<code>cd api && npm run dev</code>
+					</p>
+					<button type="button" className="auth-btn auth-btn-ghost" onClick={() => void pingApi()}>
+						Retry connection
+					</button>
+				</div>
+			) : null}
 
 			{step === 'credentials' ? (
 				<>
@@ -133,7 +169,7 @@ export function AuthPanel({ mode }: { mode: Mode }) {
 										if (!enabled) {
 											e.preventDefault();
 											setError(
-												`${label} login isn’t configured yet. Use email + password, or set OAuth env vars on the API.`,
+												`${label} isn’t configured yet. Use email + password, or set OAuth env vars on the API.`,
 											);
 										}
 									}}
@@ -196,7 +232,7 @@ export function AuthPanel({ mode }: { mode: Mode }) {
 						</label>
 						<button
 							className="auth-btn auth-btn-primary"
-							disabled={busy || !email || password.length < 8}
+							disabled={busy || !email || password.length < 8 || (showApiBanner && apiDown)}
 							type="submit"
 						>
 							{busy ? 'Please wait…' : 'Continue'}
@@ -237,6 +273,7 @@ export function AuthPanel({ mode }: { mode: Mode }) {
 								setDemoCode('');
 								setInfo('');
 								setError('');
+								verifyLock.current = false;
 							}}
 						>
 							Back to password
@@ -245,11 +282,6 @@ export function AuthPanel({ mode }: { mode: Mode }) {
 				</form>
 			)}
 
-			{apiDown ? (
-				<p className="auth-error">
-					Cannot reach the Copix API. Run <code>cd api && npm run dev</code> (port 8787) or set VITE_API_URL.
-				</p>
-			) : null}
 			{error ? <p className="auth-error">{error}</p> : null}
 
 			<p className="auth-switch">
