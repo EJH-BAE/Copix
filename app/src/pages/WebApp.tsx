@@ -32,6 +32,10 @@ export default function WebApp() {
 	}
 
 	useEffect(() => {
+		document.title = 'Copix Web';
+	}, []);
+
+	useEffect(() => {
 		if (token) refreshChats().catch((e) => setError(String(e.message || e)));
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [token]);
@@ -206,14 +210,23 @@ export default function WebApp() {
 						<div className="webapp-empty">
 							<h1>You’re in Copix Web</h1>
 							<p>Signed-in sessions stream from your Ollama models through the Copix API. Ask anything to start.</p>
+							<p className="muted" style={{ marginTop: 16, fontSize: 13 }}>
+								Try: “Plan a Mission Control view” · “Explain this error” · “Scaffold a landing page”
+							</p>
 						</div>
 					)}
-					{active?.messages?.map((m, i) => (
-						<div key={i} className={`webapp-msg ${m.role}`}>
-							<div className="webapp-msg-label">{m.role === 'user' ? 'You' : 'Copix'}</div>
-							<pre>{m.content || (busy && i === active.messages.length - 1 ? '▋' : '')}</pre>
-						</div>
-					))}
+					{active?.messages?.map((m, i) => {
+						const streaming = busy && m.role === 'assistant' && i === active.messages.length - 1;
+						return (
+							<div key={i} className={`webapp-msg ${m.role}`}>
+								<div className="webapp-msg-label">{m.role === 'user' ? 'You' : 'Copix'}</div>
+								<pre>
+									{m.content}
+									{streaming ? <span className="webapp-caret">|</span> : null}
+								</pre>
+							</div>
+						);
+					})}
 				</div>
 
 				{error ? <p className="webapp-error">{error}</p> : null}

@@ -12,10 +12,10 @@ export function SiteNav() {
 				<span>Copix</span>
 			</Link>
 			<nav className="nav-links" aria-label="Primary">
-				<a href="#product">Product</a>
-				<a href="#demo">Demo</a>
-				<a href="#install">Install</a>
-				<a href="#models">Models</a>
+				<Link to={{ pathname: '/', hash: 'product' }}>Product</Link>
+				<Link to={{ pathname: '/', hash: 'demo' }}>Demo</Link>
+				<Link to={{ pathname: '/', hash: 'install' }}>Install</Link>
+				<Link to={{ pathname: '/', hash: 'models' }}>Models</Link>
 			</nav>
 			<div className="nav-actions">
 				{user ? (

@@ -18,18 +18,29 @@ const MAC_DMG = `${GITHUB}/releases/download/v4.2.0_macOS/Copix-4.2.0-macOS-arm6
 const WIN_EXE = `${GITHUB}/releases/download/v4.1.0/Copix-4.1.0-Windows-x64.exe`;
 const CLI_INSTALL = 'curl -fsSL https://raw.githubusercontent.com/EJH-BAE/Copix/main/cli/install.sh | bash';
 
-export function detectPlatform(ua = typeof navigator !== 'undefined' ? navigator.userAgent : '', lang = typeof navigator !== 'undefined' ? navigator.language : 'en'): PlatformInfo {
+export function detectPlatform(
+	ua = typeof navigator !== 'undefined' ? navigator.userAgent : '',
+	lang = typeof navigator !== 'undefined' ? navigator.language : 'en',
+	platform =
+		typeof navigator !== 'undefined'
+			? (navigator as Navigator & { userAgentData?: { platform?: string } }).userAgentData?.platform
+				|| navigator.platform
+				|| ''
+			: '',
+): PlatformInfo {
 	const lower = ua.toLowerCase();
+	const plat = String(platform).toLowerCase();
 	let os: DetectedOs = 'other';
-	if (/iphone|ipad|ipod|mac os|macintosh/.test(lower)) os = 'mac';
-	else if (/windows|win64|win32/.test(lower)) os = 'windows';
-	else if (/linux|x11/.test(lower) && !/android/.test(lower)) os = 'linux';
+	if (/iphone|ipad|ipod/.test(lower) || /mac os|macintosh/.test(lower) || plat.includes('mac')) os = 'mac';
+	else if (/windows|win64|win32/.test(lower) || plat.includes('win')) os = 'windows';
+	else if ((/linux|x11/.test(lower) || plat.includes('linux')) && !/android/.test(lower)) os = 'linux';
 
 	const isKo = lang.toLowerCase().startsWith('ko');
+	const isArmMac = os === 'mac' && (/arm|aarch64/.test(lower) || /apple/.test(plat));
 
 	const osLabel =
-		os === 'mac' ? (isKo ? 'macOS' : 'macOS') :
-		os === 'windows' ? (isKo ? 'Windows' : 'Windows') :
+		os === 'mac' ? (isArmMac ? 'macOS (Apple Silicon)' : 'macOS') :
+		os === 'windows' ? 'Windows' :
 		os === 'linux' ? 'Linux' :
 		isKo ? '내 기기' : 'your device';
 

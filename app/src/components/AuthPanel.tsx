@@ -1,5 +1,6 @@
 import { FormEvent, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { apiFetch } from '../lib/api';
 import { useAuth } from '../lib/auth';
 import { OtpInput } from './OtpInput';
 
@@ -13,12 +14,24 @@ export function AuthPanel({ mode }: { mode: Mode }) {
 	const [name, setName] = useState('');
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
+	const [showPassword, setShowPassword] = useState(false);
 	const [code, setCode] = useState('');
 	const [challengeId, setChallengeId] = useState('');
 	const [busy, setBusy] = useState(false);
 	const [error, setError] = useState('');
 	const [info, setInfo] = useState('');
 	const [demoCode, setDemoCode] = useState('');
+	const [apiDown, setApiDown] = useState(false);
+
+	useEffect(() => {
+		document.title = mode === 'signup' ? 'Sign up · Copix' : 'Sign in · Copix';
+	}, [mode]);
+
+	useEffect(() => {
+		apiFetch('/health')
+			.then(() => setApiDown(false))
+			.catch(() => setApiDown(true));
+	}, []);
 
 	async function submitCredentials(e: FormEvent) {
 		e.preventDefault();
@@ -96,10 +109,11 @@ export function AuthPanel({ mode }: { mode: Mode }) {
 
 	return (
 		<div className="auth-card">
-			<div className="auth-brand">
+			<Link to="/" className="auth-brand">
 				<img src={`${import.meta.env.BASE_URL}icon.png`} alt="" width={36} height={36} />
 				<span>Copix</span>
-			</div>
+			</Link>
+			<p className="auth-step">{step === 'credentials' ? 'Step 1 · Password' : 'Step 2 · Email code'}</p>
 			<h1>{title}</h1>
 			<p className="auth-sub">{subtitle}</p>
 
@@ -160,15 +174,25 @@ export function AuthPanel({ mode }: { mode: Mode }) {
 						</label>
 						<label>
 							Password
-							<input
-								type="password"
-								required
-								minLength={8}
-								autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
-								placeholder={mode === 'signup' ? 'At least 8 characters' : 'Your password'}
-								value={password}
-								onChange={(e) => setPassword(e.target.value)}
-							/>
+							<span className="auth-password-wrap">
+								<input
+									type={showPassword ? 'text' : 'password'}
+									required
+									minLength={8}
+									autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
+									placeholder={mode === 'signup' ? 'At least 8 characters' : 'Your password'}
+									value={password}
+									onChange={(e) => setPassword(e.target.value)}
+								/>
+								<button
+									type="button"
+									className="auth-eye"
+									onClick={() => setShowPassword((v) => !v)}
+									aria-label={showPassword ? 'Hide password' : 'Show password'}
+								>
+									{showPassword ? 'Hide' : 'Show'}
+								</button>
+							</span>
 						</label>
 						<button
 							className="auth-btn auth-btn-primary"
@@ -221,6 +245,11 @@ export function AuthPanel({ mode }: { mode: Mode }) {
 				</form>
 			)}
 
+			{apiDown ? (
+				<p className="auth-error">
+					Cannot reach the Copix API. Run <code>cd api && npm run dev</code> (port 8787) or set VITE_API_URL.
+				</p>
+			) : null}
 			{error ? <p className="auth-error">{error}</p> : null}
 
 			<p className="auth-switch">

@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { InteractiveDemo } from '../components/InteractiveDemo';
 import { SiteNav } from '../components/SiteNav';
@@ -8,6 +8,7 @@ import { detectPlatform, GITHUB, RELEASES } from '../lib/platform';
 const models = ['qwen2.5:3b', 'qwen2.5-coder:7b', 'mistral:7b', 'qwen3.5:4b', 'Auto'];
 
 const changelog = [
+	{ date: 'Aug 3, 2026', title: 'Light theme auth + Copix Web, Cursor-like demo' },
 	{ date: 'Aug 2, 2026', title: 'Password login + 6-digit 2FA for Copix Web' },
 	{ date: 'Aug 1, 2026', title: 'Streaming agent replies in the browser' },
 	{ date: 'Jul 30, 2026', title: 'macOS Studio 4.2.0' },
@@ -18,6 +19,12 @@ export default function Landing() {
 	const { user } = useAuth();
 	const platform = useMemo(() => detectPlatform(), []);
 	const [copied, setCopied] = useState(false);
+
+	useEffect(() => {
+		document.title = platform.isKo
+			? 'Copix — AI 코딩 에이전트'
+			: 'Copix — Build software with Copix';
+	}, [platform.isKo]);
 	const t = platform.isKo
 		? {
 				kicker: 'AI 코딩 에이전트',
@@ -95,7 +102,9 @@ export default function Landing() {
 						</a>
 					</div>
 					<p className="hero-meta">
-						{platform.desktopHint} · {platform.isKo ? '비밀번호 + 6자리 2단계' : 'password + 6-digit 2FA'}
+						{platform.isKo
+							? `${platform.osLabel} 감지됨 · 비밀번호 + 6자리 2단계`
+							: `Detected ${platform.osLabel} · password + 6-digit 2FA`}
 					</p>
 
 					<div className="hero-plane" id="demo">
