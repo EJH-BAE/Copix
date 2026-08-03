@@ -8,15 +8,14 @@ type Props = {
 
 export function OtpInput({ value, onChange, disabled }: Props) {
 	const refs = useRef<Array<HTMLInputElement | null>>([]);
-	const digits = value.padEnd(6, ' ').slice(0, 6).split('');
+	const digits = Array.from({ length: 6 }, (_, i) => value[i] || '');
 
 	useEffect(() => {
 		refs.current[0]?.focus();
 	}, []);
 
 	function setAt(index: number, char: string) {
-		const next = value.split('');
-		while (next.length < 6) next.push('');
+		const next = digits.slice();
 		next[index] = char;
 		const joined = next.join('').replace(/\D/g, '').slice(0, 6);
 		onChange(joined);
@@ -28,19 +27,25 @@ export function OtpInput({ value, onChange, disabled }: Props) {
 			{digits.map((d, i) => (
 				<input
 					key={i}
-					ref={(el) => { refs.current[i] = el; }}
+					ref={(el) => {
+						refs.current[i] = el;
+					}}
 					className="otp-cell"
+					type="text"
 					inputMode="numeric"
+					pattern="[0-9]*"
 					autoComplete={i === 0 ? 'one-time-code' : 'off'}
 					maxLength={1}
+					size={1}
 					disabled={disabled}
-					value={d.trim()}
+					value={d}
+					aria-label={`Digit ${i + 1}`}
 					onChange={(e) => {
 						const v = e.target.value.replace(/\D/g, '').slice(-1);
 						setAt(i, v);
 					}}
 					onKeyDown={(e) => {
-						if (e.key === 'Backspace' && !digits[i].trim() && i > 0) {
+						if (e.key === 'Backspace' && !digits[i] && i > 0) {
 							refs.current[i - 1]?.focus();
 						}
 					}}

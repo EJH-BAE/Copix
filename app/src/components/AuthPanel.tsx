@@ -90,9 +90,9 @@ export function AuthPanel({ mode }: { mode: Mode }) {
 	const subtitle =
 		step === 'credentials'
 			? mode === 'signup'
-				? 'Password first — then a 6-digit email code as the second step.'
-				: 'Enter your email and password. We’ll email a 6-digit code for 2FA.'
-			: 'Second step: enter the 6-digit code we sent to your email.';
+				? 'Password first — then a 6-digit email code as step 2.'
+				: 'Email + password first. Then a 6-digit code (2FA).'
+			: 'Step 2 of 2 — enter the 6-digit code from your email.';
 
 	return (
 		<div className="auth-card">
@@ -171,11 +171,11 @@ export function AuthPanel({ mode }: { mode: Mode }) {
 							/>
 						</label>
 						<button
-							className="btn primary lg auth-submit"
+							className="auth-btn auth-btn-primary"
 							disabled={busy || !email || password.length < 8}
 							type="submit"
 						>
-							{busy ? 'Please wait…' : mode === 'signup' ? 'Continue' : 'Continue'}
+							{busy ? 'Please wait…' : 'Continue'}
 						</button>
 					</form>
 				</>
@@ -192,19 +192,19 @@ export function AuthPanel({ mode }: { mode: Mode }) {
 					) : null}
 					{info ? <p className="auth-info">{info}</p> : null}
 					<button
-						className="btn primary lg auth-submit"
+						className="auth-btn auth-btn-primary"
 						disabled={busy || code.length !== 6}
 						type="submit"
 					>
 						{busy ? 'Verifying…' : 'Verify & continue'}
 					</button>
 					<div className="auth-actions">
-						<button type="button" className="btn ghost auth-submit" disabled={busy} onClick={() => void resend()}>
+						<button type="button" className="auth-btn auth-btn-ghost" disabled={busy} onClick={() => void resend()}>
 							Resend code
 						</button>
 						<button
 							type="button"
-							className="btn ghost auth-submit"
+							className="auth-btn auth-btn-ghost"
 							disabled={busy}
 							onClick={() => {
 								setStep('credentials');
