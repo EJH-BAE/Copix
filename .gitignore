@@ -5,6 +5,8 @@ _site/
 .env.local
 .DS_Store
 *.log
+*.tsbuildinfo
 app/dist/
 api/node_modules/
 app/node_modules/
+*.tsbuildinfo
