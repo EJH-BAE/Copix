@@ -14,6 +14,26 @@ Checksums: [`SHA256SUMS.txt`](./SHA256SUMS.txt)
 
 Also published as GitHub Release **[v4.3.0](https://github.com/EJH-BAE/Copix/releases/tag/v4.3.0)**.
 
+## macOS: “Copix is damaged and can’t be opened”
+
+That message is **Gatekeeper quarantine** (common after Chrome downloads), not a broken DMG. The SHA-256 of the release matches the published checksum.
+
+1. Open the DMG and drag **Copix** into **Applications**.
+2. In Terminal, clear quarantine and open:
+
+```bash
+xattr -cr /Applications/Copix.app
+open /Applications/Copix.app
+```
+
+Or one shot after install:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/EJH-BAE/Copix/main/release/fix-macos-quarantine.sh | bash
+```
+
+Alternative: Finder → Applications → **Control-click** Copix → **Open** → **Open**.
+
 ## CLI (separate one-liner install)
 
 macOS / Linux:
