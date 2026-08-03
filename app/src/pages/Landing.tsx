@@ -8,9 +8,9 @@ import { scrollToHash } from '../lib/scroll';
 const models = ['qwen2.5:3b', 'qwen2.5-coder:7b', 'mistral:7b', 'qwen3.5:4b', 'Auto'];
 
 const changelog = [
+	{ date: 'Aug 3, 2026', title: 'Copix 4.3.0 — Desktop release folder + agent creates files' },
 	{ date: 'Aug 3, 2026', title: 'Standalone CLI for macOS & Windows — no accounts' },
 	{ date: 'Jul 30, 2026', title: 'macOS Studio 4.2.0' },
-	{ date: 'Jul 22, 2026', title: 'Windows Studio 4.1.0' },
 ];
 
 const slash = [
