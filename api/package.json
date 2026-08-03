@@ -7,7 +7,8 @@
     "free-port": "node scripts/free-port.mjs",
     "predev": "node scripts/free-port.mjs",
     "dev": "node --watch src/index.js",
-    "start": "node src/index.js"
+    "start": "node src/index.js",
+    "check-oauth": "node scripts/check-oauth.mjs"
   },
   "engines": {
     "node": ">=20"

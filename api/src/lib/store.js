@@ -1,5 +1,5 @@
 /**
- * In-memory store for users / OTP / chats.
+ * In-memory store for users / OTP.
  * Swap for Postgres/Redis in production — interface stays the same.
  */
 
@@ -7,7 +7,6 @@ const otps = new Map(); // email -> { code, expiresAt, attempts, purpose, pendin
 const users = new Map(); // id -> user
 const usersByEmail = new Map();
 const oauthLinks = new Map(); // provider:subject -> userId
-const chats = new Map(); // userId -> ChatSession[]
 const pending2fa = new Map(); // challengeId -> { userId, expiresAt }
 
 export function upsertUser({ email, name, avatarUrl, provider, subject, passwordHash }) {
@@ -112,21 +111,4 @@ export function consume2faChallenge(id) {
 	pending2fa.delete(id);
 	if (!row || Date.now() > row.expiresAt) return null;
 	return row.userId;
-}
-
-export function listChats(userId) {
-	return chats.get(userId) || [];
-}
-
-export function saveChat(userId, session) {
-	const all = chats.get(userId) || [];
-	const idx = all.findIndex(s => s.id === session.id);
-	if (idx >= 0) all[idx] = session;
-	else all.unshift(session);
-	chats.set(userId, all.slice(0, 40));
-	return session;
-}
-
-export function getChat(userId, id) {
-	return (chats.get(userId) || []).find(s => s.id === id) || null;
 }

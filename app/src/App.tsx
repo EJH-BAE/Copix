@@ -17,7 +17,6 @@ export default function App() {
 					<Route path="/signup" element={<Signup />} />
 					<Route path="/auth/callback" element={<AuthCallback />} />
 					<Route path="/account" element={<Account />} />
-					<Route path="/app" element={<Navigate to="/account" replace />} />
 					<Route path="*" element={<Navigate to="/" replace />} />
 				</Routes>
 			</BrowserRouter>

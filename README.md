@@ -1,6 +1,6 @@
 # Copix public site
 
-Marketing site and account auth for **Copix Desktop** and **CLI**.
+Marketing site and account auth for **Copix Desktop** and **CLI** (no Copix Web).
 
 **Live:** https://ejh-bae.github.io/Copix/
 
@@ -20,11 +20,11 @@ Copix is **free to use** and **not open source** (proprietary).
 ```bash
 ./dev.sh
 # or:
-cd api && npm run dev
+cd api && npm run check-oauth && npm run dev
 cd app && npm run dev
 ```
 
-Set OAuth credentials in `api/.env` for Google / GitHub / Apple. Set SMTP for real 2FA email.
+OAuth: create Google / GitHub / Apple apps, paste secrets into `api/.env` — see [api/README.md](api/README.md).
 
 ## Build (GitHub Pages)
 

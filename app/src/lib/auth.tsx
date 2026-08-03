@@ -31,8 +31,6 @@ type CredResult = {
 	step: '2fa';
 	email: string;
 	challengeId?: string;
-	demo?: boolean;
-	demoCode?: string;
 	message: string;
 };
 

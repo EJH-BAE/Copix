@@ -1,5 +1,5 @@
 import { Hono } from 'hono';
-import { env, oauthProviders } from '../lib/env.js';
+import { env, oauthProviders, oauthRedirectUris } from '../lib/env.js';
 import {
 	consume2faChallenge,
 	create2faChallenge,
@@ -45,6 +45,7 @@ auth.get('/providers', (c) => c.json({
 	...oauthProviders(),
 	password: true,
 	twoFactor: true,
+	redirects: oauthRedirectUris(),
 }));
 
 /** Sign up with email + password → sends 6-digit 2FA code. */

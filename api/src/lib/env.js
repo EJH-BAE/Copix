@@ -52,7 +52,6 @@ export const env = {
 		keyId: process.env.APPLE_KEY_ID || '',
 		privateKey: (process.env.APPLE_PRIVATE_KEY || '').replace(/\\n/g, '\n'),
 	},
-	ollamaBaseUrl: (process.env.OLLAMA_BASE_URL || 'http://127.0.0.1:11434').replace(/\/$/, ''),
 };
 
 export function oauthProviders() {
@@ -60,8 +59,19 @@ export function oauthProviders() {
 		google: Boolean(env.google.id && env.google.secret),
 		github: Boolean(env.github.id && env.github.secret),
 		apple: Boolean(env.apple.id && env.apple.teamId && env.apple.keyId && env.apple.privateKey),
-		email: true, // legacy flag — password + 2FA is the primary email path
 		password: true,
 		twoFactor: true,
+	};
+}
+
+/** Public redirect URIs to paste into provider consoles. */
+export function oauthRedirectUris() {
+	const base = env.apiPublicUrl;
+	return {
+		google: `${base}/auth/callback/google`,
+		github: `${base}/auth/callback/github`,
+		apple: `${base}/auth/callback/apple`,
+		appUrl: env.appUrl,
+		apiPublicUrl: base,
 	};
 }
