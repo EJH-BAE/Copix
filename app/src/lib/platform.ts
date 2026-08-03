@@ -95,8 +95,8 @@ export function detectPlatform(
 	const cliAltCommand = isWindows ? CLI_SH : CLI_PS;
 
 	const cliHint = isKo
-		? '계정 없음. Node.js 18+, git, Ollama가 필요합니다. 설치 후 copix doctor를 실행하세요.'
-		: 'No account. Needs Node.js 18+, git, and Ollama. After install, run copix doctor.';
+		? '계정 없음. Node.js 18+, git, Ollama만 있으면 됩니다. 설치 스크립트가 PATH에 영구 등록합니다.'
+		: 'No account. Needs Node.js 18+, git, and Ollama. The installer puts copix on your PATH permanently.';
 
 	return {
 		os,
