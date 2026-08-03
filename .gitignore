@@ -1,24 +1,7 @@
 .DS_Store
 Thumbs.db
 *.log
-node_modules/
 .env
 .env.local
-
-# Build outputs
-**/node_modules/
-**/dist/
-**/dist-electron/
-**/release/staging/
-**/release/*.exe
-**/release/*.blockmap
-**/release/*.dmg
-**/release/*.zip
-**/.venv/
-**/__pycache__/
-*.pyc
-
-# Local IDE
 .cursor/
 .claude/
-cli/node_modules/
