@@ -29,8 +29,8 @@ No accounts. Desktop and CLI run locally with [Ollama](https://ollama.com).
 | **Desktop installers** | [`release/`](release/) · [GitHub Release v4.3.0](https://github.com/EJH-BAE/Copix/releases/tag/v4.3.0) |
 | **macOS Desktop** | [`release/Copix-4.3.0-macOS-arm64.dmg`](release/Copix-4.3.0-macOS-arm64.dmg) |
 | **Windows Desktop** | [`release/Copix-4.3.0-Windows-x64.exe`](release/Copix-4.3.0-Windows-x64.exe) |
-| **CLI (macOS / Linux)** | `curl -fsSL https://raw.githubusercontent.com/EJH-BAE/Copix/main/cli/install.sh \| bash` |
-| **CLI (Windows)** | `irm https://raw.githubusercontent.com/EJH-BAE/Copix/main/cli/install.ps1 \| iex` |
+| **CLI (macOS / Linux)** | `curl -fsSL https://raw.githubusercontent.com/EJH-BAE/Copix/refs/heads/main/cli/install.sh \| bash` |
+| **CLI (Windows)** | `irm https://raw.githubusercontent.com/EJH-BAE/Copix/refs/heads/main/cli/install.ps1 \| iex` |
 
 ```bash
 ollama pull qwen2.5:3b

@@ -39,13 +39,13 @@ Alternative: Finder → Applications → **Control-click** Copix → **Open** �
 macOS / Linux:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/EJH-BAE/Copix/main/cli/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/EJH-BAE/Copix/refs/heads/main/cli/install.sh | bash
 ```
 
 Windows (PowerShell):
 
 ```powershell
-irm https://raw.githubusercontent.com/EJH-BAE/Copix/main/cli/install.ps1 | iex
+irm https://raw.githubusercontent.com/EJH-BAE/Copix/refs/heads/main/cli/install.ps1 | iex
 ```
 
 Then: `ollama pull qwen2.5:3b` → `copix doctor` → `copix`
