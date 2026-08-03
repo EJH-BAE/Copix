@@ -18,30 +18,24 @@ export class ErrorBoundary extends Component<Props, State> {
 	render() {
 		if (this.state.error) {
 			return (
-				<div className="auth-page">
-					<div className="auth-card">
-						<p className="auth-brand">
-							<img src={`${import.meta.env.BASE_URL}icon.png`} alt="" width={36} height={36} />
-							<span>Copix</span>
-						</p>
-						<h1>Something went wrong</h1>
-						<p className="auth-sub">The page hit an unexpected error. You can reload or go home.</p>
-						<p className="auth-error">{this.state.error.message}</p>
-						<div className="auth-actions">
-							<button
-								type="button"
-								className="auth-btn auth-btn-primary"
-								onClick={() => {
-									this.setState({ error: null });
-									window.location.reload();
-								}}
-							>
-								Reload
-							</button>
-							<Link className="auth-btn auth-btn-ghost" to="/">
-								Back home
-							</Link>
-						</div>
+				<div className="page" style={{ padding: 48, textAlign: 'center' }}>
+					<img src={`${import.meta.env.BASE_URL}icon.png`} alt="" width={36} height={36} />
+					<h1>Something went wrong</h1>
+					<p className="hero-trust">{this.state.error.message}</p>
+					<div className="hero-cta">
+						<button
+							type="button"
+							className="btn primary"
+							onClick={() => {
+								this.setState({ error: null });
+								window.location.reload();
+							}}
+						>
+							Reload
+						</button>
+						<Link className="btn ghost" to="/">
+							Back home
+						</Link>
 					</div>
 				</div>
 			);

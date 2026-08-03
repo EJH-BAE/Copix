@@ -503,6 +503,35 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 12px); }
 .install-os { color: var(--ink-2); font-size: 0.95rem; }
 .install-hint { margin: 0 0 10px; color: var(--ink-3); font-size: 0.92rem; }
 .install-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+.cli-band {
+	background:
+		radial-gradient(520px 240px at 90% 0%, rgba(210, 225, 255, 0.35), transparent 60%),
+		var(--bg-soft);
+}
+.cli-slash {
+	list-style: none;
+	margin: 18px 0 0;
+	padding: 0;
+	display: grid;
+	gap: 8px;
+}
+.cli-slash li {
+	display: grid;
+	grid-template-columns: 96px minmax(0, 1fr);
+	gap: 10px;
+	align-items: baseline;
+	font-size: 13px;
+	color: var(--ink-2);
+}
+.cli-slash code {
+	font-family: var(--font-mono);
+	font-size: 12px;
+	font-weight: 700;
+	color: var(--ink);
+}
+@media (max-width: 600px) {
+	.cli-slash li { grid-template-columns: 1fr; gap: 2px; }
+}
 
 .demo {
 	background: #f4f4f5;

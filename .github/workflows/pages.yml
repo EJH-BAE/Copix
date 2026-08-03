@@ -32,7 +32,6 @@ jobs:
         working-directory: app
         env:
           GITHUB_PAGES: 'true'
-          VITE_API_URL: ${{ vars.VITE_API_URL }}
         run: |
           npm ci
           npm run build

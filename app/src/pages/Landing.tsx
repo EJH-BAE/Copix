@@ -1,29 +1,35 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { InteractiveDemo } from '../components/InteractiveDemo';
 import { SiteNav } from '../components/SiteNav';
-import { useAuth } from '../lib/auth';
 import { detectPlatform, GITHUB, RELEASES } from '../lib/platform';
 import { scrollToHash } from '../lib/scroll';
 
 const models = ['qwen2.5:3b', 'qwen2.5-coder:7b', 'mistral:7b', 'qwen3.5:4b', 'Auto'];
 
 const changelog = [
-	{ date: 'Aug 3, 2026', title: 'Account sign-in for Desktop and CLI' },
+	{ date: 'Aug 3, 2026', title: 'Standalone CLI for macOS & Windows — no accounts' },
 	{ date: 'Jul 30, 2026', title: 'macOS Studio 4.2.0' },
 	{ date: 'Jul 22, 2026', title: 'Windows Studio 4.1.0' },
 ];
 
+const slash = [
+	{ cmd: '/model', tip: 'Pin an Ollama tag or use auto routing' },
+	{ cmd: '/pull', tip: 'Download a model into Ollama' },
+	{ cmd: '/cwd', tip: 'Set the workspace (saved in settings)' },
+	{ cmd: '/doctor', tip: 'Check Node, Ollama, models, and paths' },
+	{ cmd: '/history', tip: 'Sessions shared with Desktop' },
+];
+
 export default function Landing() {
-	const { user } = useAuth();
 	const platform = useMemo(() => detectPlatform(), []);
-	const [copied, setCopied] = useState(false);
+	const [copied, setCopied] = useState<'cli' | 'alt' | 'desktop' | null>(null);
 	const location = useLocation();
 
 	useEffect(() => {
 		document.title = platform.isKo
-			? 'Copix — AI 코딩 에이전트'
-			: 'Copix — Build software with Copix';
+			? 'Copix — Desktop & CLI'
+			: 'Copix — Desktop & CLI';
 	}, [platform.isKo]);
 
 	useEffect(() => {
@@ -35,16 +41,18 @@ export default function Landing() {
 
 	const t = platform.isKo
 		? {
-				kicker: 'AI 코딩 에이전트',
-				trust: '결정은 당신이, 구현은 Copix가. Desktop과 CLI에서 같은 계정으로 로그인하세요.',
-				cta: user ? '계정' : '무료로 시작',
-				download: platform.desktopLabel,
-				trusted: '매일 로컬 모델로 빌드하는 팀을 위해',
+				kicker: 'Desktop · CLI · 로컬 모델',
+				trust: '계정 없음. Copix Desktop과 독립형 CLI로 에이전트에 일을 맡기고, 결정은 당신이 하세요.',
+				ctaDesktop: platform.desktopLabel,
+				ctaCli: 'CLI 설치',
+				trusted: '로컬 Ollama로 매일 빌드하는 팀을 위해',
 				agentsTitle: '아이디어를 코드로',
-				agentsBody: '에이전트에 작업을 맡기고 결정은 당신이 하세요. Studio와 CLI가 같은 흐름을 공유합니다.',
-				toolsTitle: '모든 도구에서',
-				toolsBody: '터미널과 데스크톱 — 설치 파일과 안내를 OS에 맞게 제공합니다.',
-				installTitle: '지금 설치',
+				agentsBody: 'Studio와 CLI가 같은 에이전트·도구를 공유합니다. 세션은 ~/Copix에 맞춰집니다.',
+				toolsTitle: '두 가지 설치면 끝',
+				toolsBody: 'Desktop은 릴리스 설치 파일, CLI는 한 줄 설치 스크립트 — macOS와 Windows 모두.',
+				installTitle: 'Desktop 설치',
+				cliTitle: 'CLI 설치',
+				cliBody: '독립형 터미널 에이전트. Node 18+, git, Ollama만 있으면 됩니다.',
 				quotesTitle: '새로운 소프트웨어 만드는 방식',
 				frontierTitle: '프론티어에 머무르세요',
 				modelsTitle: '작업마다 맞는 모델',
@@ -53,18 +61,21 @@ export default function Landing() {
 				closingTitle: '지금 Copix를 써보세요.',
 				copy: '복사',
 				copied: '복사됨',
+				noAccount: '로그인·계정·웹 앱 없음 — Desktop과 CLI만.',
 			}
 		: {
-				kicker: 'The AI coding agent',
-				trust: 'Hand work to the agent while you focus on decisions — in Desktop and the CLI, with one Copix account.',
-				cta: user ? 'Account' : 'Get started free',
-				download: platform.desktopLabel,
+				kicker: 'Desktop · CLI · local models',
+				trust: 'No accounts. Hand work to the agent in Copix Desktop or the standalone CLI — you stay on decisions.',
+				ctaDesktop: platform.desktopLabel,
+				ctaCli: 'Install CLI',
 				trusted: 'Trusted by builders who keep models local',
 				agentsTitle: 'Agents turn ideas into code',
-				agentsBody: 'Accelerate development by handing off tasks to Copix while you stay on decisions. Studio and CLI share one agent brain.',
-				toolsTitle: 'In every tool, at every step',
-				toolsBody: 'Terminal and desktop — we detect your OS so install files match your machine.',
-				installTitle: 'Install for your machine',
+				agentsBody: 'Studio and the CLI share the same agent brain and tools. Sessions sync through ~/Copix.',
+				toolsTitle: 'Two ways to install',
+				toolsBody: 'Desktop from Releases. CLI from a one-liner — macOS and Windows.',
+				installTitle: 'Install Desktop',
+				cliTitle: 'Install CLI',
+				cliBody: 'Standalone terminal agent. Needs Node.js 18+, git, and Ollama — nothing else.',
 				quotesTitle: 'The new way to build software',
 				frontierTitle: 'Stay on the frontier',
 				modelsTitle: 'Use the best model for every task',
@@ -73,13 +84,14 @@ export default function Landing() {
 				closingTitle: 'Try Copix now.',
 				copy: 'Copy',
 				copied: 'Copied',
+				noAccount: 'No login, no accounts, no web app — Desktop and CLI only.',
 			};
 
-	async function copyDownload() {
+	async function copyText(text: string, key: 'cli' | 'alt' | 'desktop') {
 		try {
-			await navigator.clipboard.writeText(platform.desktopUrl);
-			setCopied(true);
-			window.setTimeout(() => setCopied(false), 1600);
+			await navigator.clipboard.writeText(text);
+			setCopied(key);
+			window.setTimeout(() => setCopied(null), 1600);
 		} catch {
 			/* ignore */
 		}
@@ -98,17 +110,17 @@ export default function Landing() {
 					</h1>
 					<p className="hero-trust">{t.trust}</p>
 					<div className="hero-cta">
-						<Link className="btn primary lg" to={user ? '/account' : '/signup'}>
-							{t.cta}
-						</Link>
-						<a className="btn ghost lg" href={platform.desktopUrl} target="_blank" rel="noreferrer">
-							{t.download}
+						<a className="btn primary lg" href={platform.desktopUrl} target="_blank" rel="noreferrer">
+							{t.ctaDesktop}
+						</a>
+						<a className="btn ghost lg" href="#cli">
+							{t.ctaCli}
 						</a>
 					</div>
 					<p className="hero-meta">
 						{platform.isKo
-							? `${platform.osLabel} · Google · GitHub · Apple · 이메일`
-							: `Detected ${platform.osLabel} · Google · GitHub · Apple · email`}
+							? `${platform.osLabel} · ${t.noAccount}`
+							: `Detected ${platform.osLabel} · ${t.noAccount}`}
 					</p>
 
 					<div className="hero-plane" id="demo">
@@ -135,12 +147,12 @@ export default function Landing() {
 						<h2>{platform.isKo ? '로컬에서 실행' : 'Runs on your machine'}</h2>
 						<p>
 							{platform.isKo
-								? '모델은 당신 머신에. 계정으로 Desktop과 CLI에 로그인하세요.'
-								: 'Keep models on your machine. Sign in once — use Desktop and CLI with the same account.'}
+								? '모델은 당신 머신에. 클라우드 계정이나 Copix 웹 앱이 없습니다.'
+								: 'Keep models on your machine. No cloud account. No Copix web app.'}
 						</p>
-						<Link className="text-link" to={user ? '/account' : '/signup'}>
-							{platform.isKo ? '계정 만들기 →' : 'Create an account →'}
-						</Link>
+						<a className="text-link" href="#install">
+							{platform.isKo ? '설치로 이동 →' : 'Go to install →'}
+						</a>
 					</article>
 					<article>
 						<h2>{platform.isKo ? '도구가 일을 끝냅니다' : 'Tools that ship work'}</h2>
@@ -153,32 +165,81 @@ export default function Landing() {
 
 				<section className="band" id="install">
 					<div>
-						<h2>{t.toolsTitle}</h2>
+						<h2>{t.installTitle}</h2>
 						<p>{t.toolsBody}</p>
 						<p className="install-os">
 							{platform.isKo ? '감지된 OS' : 'Detected OS'}: <strong>{platform.osLabel}</strong>
 						</p>
+						<p className="install-hint">{platform.desktopHint}</p>
 						<div className="install-actions">
 							<a className="btn primary" href={platform.desktopUrl} target="_blank" rel="noreferrer">
 								{platform.desktopLabel}
 							</a>
-							<Link className="btn ghost" to={user ? '/account' : '/signup'}>
-								{platform.isKo ? '로그인' : 'Sign in'}
-							</Link>
+							<a className="btn ghost" href={RELEASES} target="_blank" rel="noreferrer">
+								{platform.isKo ? '모든 릴리스' : 'All releases'}
+							</a>
+							<button type="button" className="btn ghost" onClick={() => void copyText(platform.desktopUrl, 'desktop')}>
+								{copied === 'desktop' ? t.copied : t.copy}
+							</button>
 						</div>
 					</div>
 					<div>
-						<h3>{t.installTitle}</h3>
-						<p className="install-hint">{platform.cliHint}</p>
+						<h3>{platform.isKo ? 'Desktop이란?' : 'What is Desktop?'}</h3>
+						<p className="install-hint">
+							{platform.isKo
+								? '네이티브 Studio 앱 — 전체 도구 표면과 에이전트 사이드바. CLI와 ~/Copix를 공유합니다.'
+								: 'Native Studio app — full tool surface and agent sidebar. Shares ~/Copix with the CLI.'}
+						</p>
 						<pre className="install"><code>{platform.desktopUrl}</code></pre>
+					</div>
+				</section>
+
+				<section className="band cli-band" id="cli">
+					<div>
+						<h2>{t.cliTitle}</h2>
+						<p>{t.cliBody}</p>
+						<p className="install-hint">{platform.cliHint}</p>
+						<p className="install-os">
+							<strong>{platform.cliLabel}</strong>
+						</p>
+						<pre className="install"><code>{platform.cliCommand}</code></pre>
 						<div className="install-actions">
-							<a className="btn primary" href={platform.desktopUrl} target="_blank" rel="noreferrer">
-								{platform.desktopLabel}
-							</a>
-							<button type="button" className="btn ghost" onClick={() => void copyDownload()}>
-								{copied ? t.copied : t.copy}
+							<button type="button" className="btn primary" onClick={() => void copyText(platform.cliCommand, 'cli')}>
+								{copied === 'cli' ? t.copied : t.copy}
 							</button>
 						</div>
+						<p className="install-os" style={{ marginTop: 22 }}>
+							<strong>{platform.cliAltLabel}</strong>
+						</p>
+						<pre className="install"><code>{platform.cliAltCommand}</code></pre>
+						<div className="install-actions">
+							<button type="button" className="btn ghost" onClick={() => void copyText(platform.cliAltCommand, 'alt')}>
+								{copied === 'alt' ? t.copied : t.copy}
+							</button>
+						</div>
+					</div>
+					<div>
+						<h3>{platform.isKo ? '설치 후' : 'After install'}</h3>
+						<pre className="install"><code>{`ollama pull qwen2.5:3b
+copix doctor
+copix
+copix "summarize this repo"`}</code></pre>
+						<ul className="cli-slash">
+							{slash.map((row) => (
+								<li key={row.cmd}>
+									<code>{row.cmd}</code>
+									<span>{row.tip}</span>
+								</li>
+							))}
+						</ul>
+						<p className="install-hint">
+							{platform.isKo
+								? '자세한 내용은 GitHub의 cli/README.md를 보세요.'
+								: 'Full reference in cli/README.md on GitHub.'}{' '}
+							<a className="text-link" href={`${GITHUB}/tree/main/cli`} target="_blank" rel="noreferrer">
+								{platform.isKo ? 'CLI 문서 →' : 'CLI docs →'}
+							</a>
+						</p>
 					</div>
 				</section>
 
@@ -211,14 +272,14 @@ export default function Landing() {
 						</figure>
 						<figure className="quote">
 							<blockquote>
-								<strong>{platform.isKo ? '한 계정' : 'One account'}</strong>
+								<strong>{platform.isKo ? '계정 없음' : 'No account'}</strong>
 								{platform.isKo
-									? 'Google, GitHub, Apple 또는 이메일로 로그인하면 Desktop과 CLI에서 이어집니다.'
-									: 'Sign in with Google, GitHub, Apple, or email — then continue in Desktop and CLI.'}
+									? '설치하고 Ollama를 켠 다음 바로 씁니다. 로그인 단계가 없습니다.'
+									: 'Install, start Ollama, and go. There is no sign-in step.'}
 							</blockquote>
 							<figcaption>
-								<strong>Account</strong>
-								<span>{platform.isKo ? 'Desktop · CLI' : 'Desktop · CLI'}</span>
+								<strong>Local</strong>
+								<span>Ollama</span>
 							</figcaption>
 						</figure>
 					</div>
@@ -277,13 +338,14 @@ export default function Landing() {
 
 				<section className="closing">
 					<h2>{t.closingTitle}</h2>
+					<p className="hero-trust" style={{ marginBottom: 8 }}>{t.noAccount}</p>
 					<div className="hero-cta">
-						<Link className="btn primary lg" to={user ? '/account' : '/signup'}>
-							{t.cta}
-						</Link>
-						<Link className="btn ghost lg" to="/login">
-							{platform.isKo ? '이미 계정이 있어요' : 'I already have an account'}
-						</Link>
+						<a className="btn primary lg" href={platform.desktopUrl} target="_blank" rel="noreferrer">
+							{t.ctaDesktop}
+						</a>
+						<a className="btn ghost lg" href="#cli">
+							{t.ctaCli}
+						</a>
 					</div>
 				</section>
 			</main>
@@ -295,13 +357,13 @@ export default function Landing() {
 				</div>
 				<div className="footer-links">
 					<a href="#product">Product</a>
-					<a href="#install">Install</a>
+					<a href="#install">Desktop</a>
+					<a href="#cli">CLI</a>
 					<a href={RELEASES}>Download</a>
 					<a href={GITHUB}>GitHub</a>
-					<Link to="/login">Sign in</Link>
 				</div>
 				<p className="footer-copy">
-					© {new Date().getFullYear()} Copix. Free to use · proprietary · not open source.
+					© {new Date().getFullYear()} Copix. Free to use · proprietary · not open source · no accounts.
 				</p>
 			</footer>
 		</div>

@@ -5,19 +5,22 @@ export type PlatformInfo = {
 	osLabel: string;
 	lang: string;
 	isKo: boolean;
-	cliCommand: string;
 	desktopLabel: string;
 	desktopUrl: string;
 	desktopHint: string;
+	cliLabel: string;
+	cliCommand: string;
 	cliHint: string;
+	cliAltLabel: string;
+	cliAltCommand: string;
 };
 
 const GITHUB = 'https://github.com/EJH-BAE/Copix';
 const RELEASES = `${GITHUB}/releases`;
 const MAC_DMG = `${GITHUB}/releases/download/v4.2.0_macOS/Copix-4.2.0-macOS-arm64.dmg`;
 const WIN_EXE = `${GITHUB}/releases/download/v4.1.0/Copix-4.1.0-Windows-x64.exe`;
-/** CLI is distributed via Releases / Studio — not from public source. */
-const CLI_INSTALL = `# Copix CLI ships with Studio releases — see ${RELEASES}`;
+const CLI_SH = 'curl -fsSL https://raw.githubusercontent.com/EJH-BAE/Copix/main/cli/install.sh | bash';
+const CLI_PS = 'irm https://raw.githubusercontent.com/EJH-BAE/Copix/main/cli/install.ps1 | iex';
 
 export function detectPlatform(
 	ua = typeof navigator !== 'undefined' ? navigator.userAgent : '',
@@ -66,28 +69,49 @@ export function detectPlatform(
 			? '감지됨: macOS — DMG를 열고 Applications로 드래그하세요.'
 			: os === 'windows'
 				? '감지됨: Windows — EXE 설치 파일을 실행하세요.'
-				: '운영체제를 자동으로 특정하지 못했습니다. 릴리스 페이지에서 맞는 빌드를 고르세요.'
+				: '릴리스 페이지에서 맞는 Studio 빌드를 고르세요.'
 		: os === 'mac'
 			? 'Detected macOS — open the DMG and drag Studio into Applications.'
 			: os === 'windows'
 				? 'Detected Windows — run the EXE installer from the release.'
-				: 'OS not detected precisely — pick the matching build on the releases page.';
+				: 'Pick the matching Studio build on the releases page.';
+
+	const isWindows = os === 'windows';
+	const cliLabel = isWindows
+		? isKo
+			? 'Windows용 CLI 설치 (PowerShell)'
+			: 'Install CLI on Windows (PowerShell)'
+		: isKo
+			? 'macOS / Linux용 CLI 설치'
+			: 'Install CLI on macOS / Linux';
+	const cliCommand = isWindows ? CLI_PS : CLI_SH;
+	const cliAltLabel = isWindows
+		? isKo
+			? 'macOS / Linux'
+			: 'macOS / Linux'
+		: isKo
+			? 'Windows (PowerShell)'
+			: 'Windows (PowerShell)';
+	const cliAltCommand = isWindows ? CLI_SH : CLI_PS;
 
 	const cliHint = isKo
-		? '계정을 만든 뒤 Studio 또는 CLI에서 같은 계정으로 로그인하세요.'
-		: 'Create an account, then sign in from Studio or the CLI with the same credentials.';
+		? '계정 없음. Node.js 18+, git, Ollama가 필요합니다. 설치 후 copix doctor를 실행하세요.'
+		: 'No account. Needs Node.js 18+, git, and Ollama. After install, run copix doctor.';
 
 	return {
 		os,
 		osLabel,
 		lang,
 		isKo,
-		cliCommand: CLI_INSTALL,
 		desktopLabel,
 		desktopUrl,
 		desktopHint,
+		cliLabel,
+		cliCommand,
 		cliHint,
+		cliAltLabel,
+		cliAltCommand,
 	};
 }
 
-export { GITHUB, RELEASES, CLI_INSTALL };
+export { GITHUB, RELEASES, CLI_SH, CLI_PS, MAC_DMG, WIN_EXE };
