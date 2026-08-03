@@ -18,7 +18,7 @@ app.get('/', (c) => c.json({
 	ok: true,
 	service: 'copix-api',
 	auth: oauthProviders(),
-	docs: 'POST /auth/email/start · POST /auth/email/verify · GET /auth/oauth/:provider · /agent/*',
+	docs: 'POST /auth/signup · /signup/verify · /login · /login/verify · /2fa/resend · GET /auth/oauth/:provider · POST /agent/chats/:id/stream',
 }));
 
 app.get('/health', (c) => c.json({ ok: true }));

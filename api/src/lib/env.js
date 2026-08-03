@@ -60,6 +60,8 @@ export function oauthProviders() {
 		google: Boolean(env.google.id && env.google.secret),
 		github: Boolean(env.github.id && env.github.secret),
 		apple: Boolean(env.apple.id && env.apple.teamId && env.apple.keyId && env.apple.privateKey),
-		email: true,
+		email: true, // legacy flag — password + 2FA is the primary email path
+		password: true,
+		twoFactor: true,
 	};
 }
