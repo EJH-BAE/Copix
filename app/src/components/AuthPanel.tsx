@@ -1,7 +1,7 @@
 import { FormEvent, useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { apiFetch } from '../lib/api';
 import { useAuth } from '../lib/auth';
+import { OAuthButtons } from './OAuthButtons';
 import { OtpInput } from './OtpInput';
 
 type Mode = 'signin' | 'signup';
@@ -19,51 +19,22 @@ export function AuthPanel({ mode }: { mode: Mode }) {
 	const [challengeId, setChallengeId] = useState('');
 	const [busy, setBusy] = useState(false);
 	const [error, setError] = useState('');
-	const [info, setInfo] = useState('');
-	const [demoCode, setDemoCode] = useState('');
-	const [apiDown, setApiDown] = useState(false);
-	const [checkingApi, setCheckingApi] = useState(true);
 	const verifyLock = useRef(false);
 
 	useEffect(() => {
 		document.title = mode === 'signup' ? 'Sign up · Copix' : 'Sign in · Copix';
 	}, [mode]);
 
-	async function pingApi() {
-		setCheckingApi(true);
-		try {
-			await apiFetch('/health');
-			setApiDown(false);
-		} catch {
-			setApiDown(true);
-		} finally {
-			setCheckingApi(false);
-		}
-	}
-
-	useEffect(() => {
-		void pingApi();
-		const id = window.setInterval(() => {
-			void pingApi();
-		}, 8000);
-		return () => window.clearInterval(id);
-	}, []);
-
 	async function submitCredentials(e: FormEvent) {
 		e.preventDefault();
 		setBusy(true);
 		setError('');
-		setInfo('');
-		setDemoCode('');
 		try {
-			await pingApi();
 			const res =
 				mode === 'signup'
 					? await auth.signup(email.trim(), password, name.trim() || undefined)
 					: await auth.login(email.trim(), password);
 			setChallengeId(res.challengeId || '');
-			setInfo(res.message);
-			if (res.demoCode) setDemoCode(res.demoCode);
 			setCode('');
 			setStep('verify');
 			verifyLock.current = false;
@@ -86,7 +57,7 @@ export function AuthPanel({ mode }: { mode: Mode }) {
 			} else {
 				await auth.verifyLogin(email.trim(), code, challengeId);
 			}
-			navigate('/app', { replace: true });
+			navigate('/account', { replace: true });
 		} catch (err) {
 			verifyLock.current = false;
 			setError(err instanceof Error ? err.message : String(err));
@@ -109,8 +80,6 @@ export function AuthPanel({ mode }: { mode: Mode }) {
 		try {
 			const res = await auth.resend2fa(email.trim(), mode === 'signup' ? 'signup' : '2fa');
 			if (res.challengeId) setChallengeId(res.challengeId);
-			setInfo(res.message);
-			if (res.demoCode) setDemoCode(res.demoCode);
 			setCode('');
 			verifyLock.current = false;
 		} catch (err) {
@@ -123,12 +92,8 @@ export function AuthPanel({ mode }: { mode: Mode }) {
 	const title = mode === 'signup' ? 'Create your Copix account' : 'Sign in to Copix';
 	const subtitle =
 		step === 'credentials'
-			? mode === 'signup'
-				? 'Password first — then a 6-digit email code as step 2.'
-				: 'Email + password first. Then a 6-digit code (2FA).'
-			: 'Step 2 of 2 — enter the 6-digit code from your email.';
-
-	const showApiBanner = import.meta.env.DEV && apiDown && !checkingApi;
+			? 'One account for Copix Desktop and CLI.'
+			: 'Enter the 6-digit code we sent to your email.';
 
 	return (
 		<div className="auth-card">
@@ -136,52 +101,15 @@ export function AuthPanel({ mode }: { mode: Mode }) {
 				<img src={`${import.meta.env.BASE_URL}icon.png`} alt="" width={36} height={36} />
 				<span>Copix</span>
 			</Link>
-			<p className="auth-step">{step === 'credentials' ? 'Step 1 · Password' : 'Step 2 · Email code'}</p>
 			<h1>{title}</h1>
 			<p className="auth-sub">{subtitle}</p>
 
-			{showApiBanner ? (
-				<div className="auth-api-banner" role="status">
-					<p>
-						API offline — start it in another terminal:
-						<br />
-						<code>cd api && npm run dev</code>
-					</p>
-					<button type="button" className="auth-btn auth-btn-ghost" onClick={() => void pingApi()}>
-						Retry connection
-					</button>
-				</div>
-			) : null}
-
 			{step === 'credentials' ? (
 				<>
-					<div className="oauth-row">
-						{(['google', 'github', 'apple'] as const).map((p) => {
-							const enabled = auth.providers[p];
-							const label = p === 'google' ? 'Google' : p === 'github' ? 'GitHub' : 'Apple';
-							return (
-								<a
-									key={p}
-									className={`oauth-btn ${enabled ? '' : 'disabled'}`}
-									href={enabled ? auth.oauthUrl(p, '/app') : undefined}
-									aria-disabled={!enabled}
-									onClick={(e) => {
-										if (!enabled) {
-											e.preventDefault();
-											setError(
-												`${label} isn’t configured yet. Use email + password, or set OAuth env vars on the API.`,
-											);
-										}
-									}}
-								>
-									Continue with {label}
-								</a>
-							);
-						})}
-					</div>
+					<OAuthButtons next="/account" />
 
 					<div className="auth-divider">
-						<span>or email + password</span>
+						<span>or email</span>
 					</div>
 
 					<form onSubmit={submitCredentials} className="auth-form">
@@ -232,7 +160,7 @@ export function AuthPanel({ mode }: { mode: Mode }) {
 						</label>
 						<button
 							className="auth-btn auth-btn-primary"
-							disabled={busy || !email || password.length < 8 || (showApiBanner && apiDown)}
+							disabled={busy || !email || password.length < 8}
 							type="submit"
 						>
 							{busy ? 'Please wait…' : 'Continue'}
@@ -245,12 +173,6 @@ export function AuthPanel({ mode }: { mode: Mode }) {
 						Code sent to <strong>{email}</strong>
 					</p>
 					<OtpInput value={code} onChange={setCode} disabled={busy} />
-					{demoCode ? (
-						<p className="auth-demo">
-							Dev email preview — your code is <strong>{demoCode}</strong>
-						</p>
-					) : null}
-					{info ? <p className="auth-info">{info}</p> : null}
 					<button
 						className="auth-btn auth-btn-primary"
 						disabled={busy || code.length !== 6}
@@ -270,13 +192,11 @@ export function AuthPanel({ mode }: { mode: Mode }) {
 								setStep('credentials');
 								setCode('');
 								setChallengeId('');
-								setDemoCode('');
-								setInfo('');
 								setError('');
 								verifyLock.current = false;
 							}}
 						>
-							Back to password
+							Back
 						</button>
 					</div>
 				</form>

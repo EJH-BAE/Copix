@@ -171,7 +171,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 		});
 	}, []);
 
-	const oauthUrl = useCallback((provider: 'google' | 'github' | 'apple', next = '/app') => {
+	const oauthUrl = useCallback((provider: 'google' | 'github' | 'apple', next = '/account') => {
 		// OAuth must hit the API origin directly (not the Vite proxy).
 		return `${apiOrigin()}/auth/oauth/${provider}?next=${encodeURIComponent(next)}`;
 	}, []);

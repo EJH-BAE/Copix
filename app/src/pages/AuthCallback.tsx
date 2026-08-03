@@ -12,7 +12,7 @@ export default function AuthCallback() {
 	useEffect(() => {
 		document.title = 'Signing in · Copix';
 		const token = params.get('token');
-		const next = params.get('next') || '/app';
+		const next = params.get('next') || '/account';
 		if (!token) {
 			setError('Missing session token from provider.');
 			return;
@@ -20,7 +20,7 @@ export default function AuthCallback() {
 		apiFetch<{ ok: boolean; user: CopixUser }>('/auth/me', { token })
 			.then((data) => {
 				setSession(token, data.user);
-				navigate(next.startsWith('/') ? next : '/app', { replace: true });
+				navigate(next.startsWith('/') ? next : '/account', { replace: true });
 			})
 			.catch((err) => setError(err instanceof Error ? err.message : String(err)));
 	}, [params, setSession, navigate]);
@@ -39,7 +39,7 @@ export default function AuthCallback() {
 						<Link className="auth-btn auth-btn-primary" to="/login">Back to sign in</Link>
 					</>
 				) : (
-					<p className="auth-sub">Connecting your Copix account.</p>
+					<p className="auth-sub">Connecting your Copix account for Desktop and CLI.</p>
 				)}
 			</div>
 		</div>

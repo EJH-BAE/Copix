@@ -105,7 +105,7 @@ export function InteractiveDemo() {
 			{ kind: 'status', text: 'web_search · gathering references' },
 			{
 				kind: 'agent',
-				text: 'Demo only — sign in to Copix Web to run this for real against your Ollama model.',
+				text: 'Sign in, then continue in Copix Desktop or the CLI with your account.',
 			},
 		]);
 	}

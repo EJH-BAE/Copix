@@ -1,6 +1,6 @@
-# Copix public site + web product
+# Copix public site
 
-Marketing site, auth UI, and **Copix Web** (logged-in browser agent).
+Marketing site and account auth for **Copix Desktop** and **CLI**.
 
 **Live:** https://ejh-bae.github.io/Copix/
 
@@ -10,43 +10,21 @@ Copix is **free to use** and **not open source** (proprietary).
 
 | Surface | Path | Notes |
 | --- | --- | --- |
-| Interactive landing | `/` | Cursor-style agent demo |
-| Sign up / Sign in | `/signup`, `/login` | Password first → 6-digit email 2FA · optional OAuth |
+| Landing | `/` | Product + install |
+| Sign up / Sign in | `/signup`, `/login` | Google · GitHub · Apple · email + password · 6-digit 2FA |
+| Account | `/account` | After sign-in — download Desktop / use CLI |
 | OAuth return | `/auth/callback` | Stores session JWT |
-| Copix Web | `/app` | Requires login — SSE chats via API → Ollama |
-
-Auth emails use **our** templates in [`api/emails/`](api/emails/) (6-digit codes), not Supabase defaults.
 
 ## Develop
 
-One command (recommended):
-
 ```bash
-git checkout public_site
-git pull
 ./dev.sh
+# or:
+cd api && npm run dev
+cd app && npm run dev
 ```
 
-Or two terminals:
-
-```bash
-cd api && npm install && npm run dev
-# frees :8787 if something else is stuck on it
-
-cd app && npm install && npm run dev
-# Vite proxies /auth /agent /health → http://127.0.0.1:8787
-# no VITE_API_URL needed locally
-```
-
-Open the Vite URL → **Sign up** → password → enter the **dev email preview** 6-digit code.
-
-If login says the API is offline:
-
-```bash
-cd api && npm run free-port && npm run dev
-```
-
-Then click **Retry connection** on the login card (or refresh).
+Set OAuth credentials in `api/.env` for Google / GitHub / Apple. Set SMTP for real 2FA email.
 
 ## Build (GitHub Pages)
 
@@ -55,4 +33,4 @@ cd app
 GITHUB_PAGES=true VITE_API_URL=https://your-api.example.com npm run build
 ```
 
-The `public_site` workflow builds `app/` and deploys `dist/`. Set repository variable `VITE_API_URL` to your deployed API.
+Set repository variable `VITE_API_URL` to your deployed API.

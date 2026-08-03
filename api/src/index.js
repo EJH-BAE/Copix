@@ -3,7 +3,6 @@ import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { env, oauthProviders } from './lib/env.js';
 import auth from './routes/auth.js';
-import agent from './routes/agent.js';
 
 const app = new Hono();
 
@@ -17,7 +16,7 @@ function corsOrigin(origin) {
 	) {
 		return origin;
 	}
-	return origin; // reflect unknown local/preview origins during development
+	return origin;
 }
 
 app.use('*', cors({
@@ -32,13 +31,12 @@ app.get('/', (c) => c.json({
 	ok: true,
 	service: 'copix-api',
 	auth: oauthProviders(),
-	docs: 'POST /auth/signup · /signup/verify · /login · /login/verify · /2fa/resend · GET /auth/oauth/:provider · POST /agent/chats/:id/stream',
+	docs: 'POST /auth/signup · /signup/verify · /login · /login/verify · /2fa/resend · GET /auth/oauth/:provider',
 }));
 
 app.get('/health', (c) => c.json({ ok: true, service: 'copix-api', time: Date.now() }));
 
 app.route('/auth', auth);
-app.route('/agent', agent);
 
 app.onError((err, c) => {
 	console.error('[copix-api]', err);

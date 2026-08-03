@@ -13,7 +13,6 @@ export default defineConfig({
 		proxy: {
 			'/health': { target: apiTarget, changeOrigin: true },
 			'/auth': { target: apiTarget, changeOrigin: true },
-			'/agent': { target: apiTarget, changeOrigin: true },
 		},
 	},
 	preview: {
@@ -21,7 +20,7 @@ export default defineConfig({
 		proxy: {
 			'/health': { target: apiTarget, changeOrigin: true },
 			'/auth': { target: apiTarget, changeOrigin: true },
-			'/agent': { target: apiTarget, changeOrigin: true },
 		},
 	},
 });
+

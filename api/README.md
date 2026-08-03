@@ -1,72 +1,36 @@
-# Copix Auth & Web API
+# Copix Auth API
 
-Backend for Copix Web: password auth + 6-digit email 2FA, Google / GitHub / Apple OAuth, and the logged-in agent chat proxy (SSE streaming).
-
-## Features
-
-- **Password first**, then **6-digit email 2FA** (custom templates in `emails/` — not Supabase)
-- **OAuth**: Google, GitHub, Sign in with Apple (enable via env)
-- **Sessions**: JWT (`Authorization: Bearer …`)
-- **Agent**: `/agent/chats` + `/agent/chats/:id/stream` (SSE → Ollama)
+Account backend for Copix Desktop and CLI: password + 6-digit email 2FA, Google / GitHub / Apple OAuth.
 
 ## Quick start
 
-From the repo root on `public_site`:
-
 ```bash
-./dev.sh
+cd api
+cp .env.example .env
+npm install
+npm run dev
 ```
 
-Or two terminals:
-
-```bash
-cd api && npm install && npm run dev   # frees :8787 if needed, then listens
-cd app && npm install && npm run dev   # Vite proxies /auth /agent /health → :8787
-```
-
-You do **not** need `VITE_API_URL` for local Vite — the app uses a same-origin proxy.
-
-API: `http://127.0.0.1:8787` · Site: `http://localhost:5173`
-
-If you see `EADDRINUSE`:
-
-```bash
-cd api && npm run free-port && npm run dev
-```
-
-## Email (SMTP)
-
-```env
-SMTP_HOST=smtp.resend.com
-SMTP_PORT=465
-SMTP_SECURE=true
-SMTP_USER=resend
-SMTP_PASS=re_xxx
-EMAIL_FROM="Copix <noreply@yourdomain.com>"
-```
-
-Until SMTP is set, signup/login return `demoCode` so local 2FA still works.
+API: `http://127.0.0.1:8787`
 
 ## Auth routes
 
 | Method | Path | Purpose |
 | --- | --- | --- |
-| POST | `/auth/signup` | Email + password → send 2FA code |
-| POST | `/auth/signup/verify` | Verify code → JWT |
-| POST | `/auth/login` | Email + password → 2FA challenge |
-| POST | `/auth/login/verify` | Verify 2FA → JWT |
+| POST | `/auth/signup` | Email + password → 2FA code |
+| POST | `/auth/signup/verify` | Verify → JWT |
+| POST | `/auth/login` | Email + password → 2FA |
+| POST | `/auth/login/verify` | Verify → JWT |
 | POST | `/auth/2fa/resend` | Resend code |
+| GET | `/auth/oauth/:provider` | Google / GitHub / Apple |
 
-## OAuth
+## OAuth env
 
-| Provider | Redirect URI |
+| Provider | Variables |
 | --- | --- |
-| Google | `{API_PUBLIC_URL}/auth/callback/google` |
-| GitHub | `{API_PUBLIC_URL}/auth/callback/github` |
-| Apple | `{API_PUBLIC_URL}/auth/callback/apple` |
+| Google | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` |
+| GitHub | `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET` |
+| Apple | `APPLE_CLIENT_ID`, `APPLE_TEAM_ID`, `APPLE_KEY_ID`, `APPLE_PRIVATE_KEY` |
 
-Set `APP_URL` to your site origin (e.g. `https://ejh-bae.github.io/Copix`).
-
-## Deploy
-
-Run this Node service on Fly, Railway, Render, or a VPS. Set GitHub Pages variable `VITE_API_URL` to the public API origin so the static site can call it.
+Redirect URIs: `{API_PUBLIC_URL}/auth/callback/{google,github,apple}`  
+Set `APP_URL` to the site origin (e.g. `https://ejh-bae.github.io/Copix`).

@@ -9,9 +9,7 @@ import { scrollToHash } from '../lib/scroll';
 const models = ['qwen2.5:3b', 'qwen2.5-coder:7b', 'mistral:7b', 'qwen3.5:4b', 'Auto'];
 
 const changelog = [
-	{ date: 'Aug 3, 2026', title: 'Light theme auth + Copix Web, Cursor-like demo' },
-	{ date: 'Aug 2, 2026', title: 'Password login + 6-digit 2FA for Copix Web' },
-	{ date: 'Aug 1, 2026', title: 'Streaming agent replies in the browser' },
+	{ date: 'Aug 3, 2026', title: 'Account sign-in for Desktop and CLI' },
 	{ date: 'Jul 30, 2026', title: 'macOS Studio 4.2.0' },
 	{ date: 'Jul 22, 2026', title: 'Windows Studio 4.1.0' },
 ];
@@ -20,7 +18,6 @@ export default function Landing() {
 	const { user } = useAuth();
 	const platform = useMemo(() => detectPlatform(), []);
 	const [copied, setCopied] = useState(false);
-
 	const location = useLocation();
 
 	useEffect(() => {
@@ -35,18 +32,18 @@ export default function Landing() {
 			window.setTimeout(() => scrollToHash(location.hash, reduced ? 'auto' : 'smooth'), 40);
 		}
 	}, [location.hash]);
+
 	const t = platform.isKo
 		? {
 				kicker: 'AI 코딩 에이전트',
-				title: 'Copix로 소프트웨어를 만드세요.',
-				trust: '결정은 당신이, 구현은 Copix가. 브라우저·데스크톱·CLI에서 같은 에이전트를 쓰세요.',
-				cta: user ? 'Copix Web 열기' : '무료로 시작',
+				trust: '결정은 당신이, 구현은 Copix가. Desktop과 CLI에서 같은 계정으로 로그인하세요.',
+				cta: user ? '계정' : '무료로 시작',
 				download: platform.desktopLabel,
 				trusted: '매일 로컬 모델로 빌드하는 팀을 위해',
 				agentsTitle: '아이디어를 코드로',
-				agentsBody: '에이전트에 작업을 맡기고 결정은 당신이 하세요. Studio, CLI, Copix Web이 같은 흐름을 공유합니다.',
+				agentsBody: '에이전트에 작업을 맡기고 결정은 당신이 하세요. Studio와 CLI가 같은 흐름을 공유합니다.',
 				toolsTitle: '모든 도구에서',
-				toolsBody: '터미널, 데스크톱, 브라우저 — 설치 명령과 파일을 OS에 맞게 안내합니다.',
+				toolsBody: '터미널과 데스크톱 — 설치 파일과 안내를 OS에 맞게 제공합니다.',
 				installTitle: '지금 설치',
 				quotesTitle: '새로운 소프트웨어 만드는 방식',
 				frontierTitle: '프론티어에 머무르세요',
@@ -59,27 +56,26 @@ export default function Landing() {
 			}
 		: {
 				kicker: 'The AI coding agent',
-				title: 'Build software with Copix.',
-				trust: 'Hand work to the agent while you focus on decisions — in the browser, desktop, and CLI.',
-				cta: user ? 'Open Copix Web' : 'Get started free',
+				trust: 'Hand work to the agent while you focus on decisions — in Desktop and the CLI, with one Copix account.',
+				cta: user ? 'Account' : 'Get started free',
 				download: platform.desktopLabel,
 				trusted: 'Trusted by builders who keep models local',
 				agentsTitle: 'Agents turn ideas into code',
-				agentsBody: 'Accelerate development by handing off tasks to Copix while you stay on decisions. Studio, CLI, and Web share one agent brain.',
+				agentsBody: 'Accelerate development by handing off tasks to Copix while you stay on decisions. Studio and CLI share one agent brain.',
 				toolsTitle: 'In every tool, at every step',
-				toolsBody: 'Terminal, desktop, and browser — we detect your OS and language so install commands and files match your machine.',
+				toolsBody: 'Terminal and desktop — we detect your OS so install files match your machine.',
 				installTitle: 'Install for your machine',
 				quotesTitle: 'The new way to build software',
 				frontierTitle: 'Stay on the frontier',
 				modelsTitle: 'Use the best model for every task',
-				modelsBody: 'Ollama-first defaults. Stretch tags when you pull them. Web sessions stream from your connected endpoint.',
+				modelsBody: 'Ollama-first defaults. Stretch tags when you pull them.',
 				changelogTitle: 'Changelog',
 				closingTitle: 'Try Copix now.',
 				copy: 'Copy',
 				copied: 'Copied',
 			};
 
-	async function copyCli() {
+	async function copyDownload() {
 		try {
 			await navigator.clipboard.writeText(platform.desktopUrl);
 			setCopied(true);
@@ -102,19 +98,17 @@ export default function Landing() {
 					</h1>
 					<p className="hero-trust">{t.trust}</p>
 					<div className="hero-cta">
-						{user ? (
-							<Link className="btn primary lg" to="/app">{t.cta}</Link>
-						) : (
-							<Link className="btn primary lg" to="/signup">{t.cta}</Link>
-						)}
+						<Link className="btn primary lg" to={user ? '/account' : '/signup'}>
+							{t.cta}
+						</Link>
 						<a className="btn ghost lg" href={platform.desktopUrl} target="_blank" rel="noreferrer">
 							{t.download}
 						</a>
 					</div>
 					<p className="hero-meta">
 						{platform.isKo
-							? `${platform.osLabel} 감지됨 · 비밀번호 + 6자리 2단계`
-							: `Detected ${platform.osLabel} · password + 6-digit 2FA`}
+							? `${platform.osLabel} · Google · GitHub · Apple · 이메일`
+							: `Detected ${platform.osLabel} · Google · GitHub · Apple · email`}
 					</p>
 
 					<div className="hero-plane" id="demo">
@@ -129,7 +123,6 @@ export default function Landing() {
 					<span>macOS</span>
 					<span>Windows</span>
 					<span>CLI</span>
-					<span>Web</span>
 				</section>
 
 				<section className="split" id="product">
@@ -139,14 +132,14 @@ export default function Landing() {
 						<a className="text-link" href="#demo">{platform.isKo ? '데모 보기 →' : 'See the demo →'}</a>
 					</article>
 					<article>
-						<h2>{platform.isKo ? '자율적으로, 로컬에서' : 'Works locally, streams live'}</h2>
+						<h2>{platform.isKo ? '로컬에서 실행' : 'Runs on your machine'}</h2>
 						<p>
 							{platform.isKo
-								? '모델은 당신 머신에. Copix Web은 로그인 후 답변을 스트리밍합니다.'
-								: 'Keep models on your machine. Copix Web streams replies once you’re signed in.'}
+								? '모델은 당신 머신에. 계정으로 Desktop과 CLI에 로그인하세요.'
+								: 'Keep models on your machine. Sign in once — use Desktop and CLI with the same account.'}
 						</p>
-						<Link className="text-link" to={user ? '/app' : '/signup'}>
-							{platform.isKo ? '웹에서 시작 →' : 'Start in the browser →'}
+						<Link className="text-link" to={user ? '/account' : '/signup'}>
+							{platform.isKo ? '계정 만들기 →' : 'Create an account →'}
 						</Link>
 					</article>
 					<article>
@@ -164,14 +157,13 @@ export default function Landing() {
 						<p>{t.toolsBody}</p>
 						<p className="install-os">
 							{platform.isKo ? '감지된 OS' : 'Detected OS'}: <strong>{platform.osLabel}</strong>
-							{platform.isKo ? ` · 언어 ${platform.lang}` : ` · language ${platform.lang}`}
 						</p>
 						<div className="install-actions">
 							<a className="btn primary" href={platform.desktopUrl} target="_blank" rel="noreferrer">
 								{platform.desktopLabel}
 							</a>
-							<Link className="btn ghost" to={user ? '/app' : '/signup'}>
-								{platform.isKo ? 'Copix Web' : 'Open Copix Web'}
+							<Link className="btn ghost" to={user ? '/account' : '/signup'}>
+								{platform.isKo ? '로그인' : 'Sign in'}
 							</Link>
 						</div>
 					</div>
@@ -183,7 +175,7 @@ export default function Landing() {
 							<a className="btn primary" href={platform.desktopUrl} target="_blank" rel="noreferrer">
 								{platform.desktopLabel}
 							</a>
-							<button type="button" className="btn ghost" onClick={() => void copyCli()}>
+							<button type="button" className="btn ghost" onClick={() => void copyDownload()}>
 								{copied ? t.copied : t.copy}
 							</button>
 						</div>
@@ -219,14 +211,14 @@ export default function Landing() {
 						</figure>
 						<figure className="quote">
 							<blockquote>
-								<strong>{platform.isKo ? '웹도 같은 제품' : 'Web feels like the product'}</strong>
+								<strong>{platform.isKo ? '한 계정' : 'One account'}</strong>
 								{platform.isKo
-									? '비밀번호로 들어가고, 6자리 코드가 두 번째 단계입니다. 답변은 스트림됩니다.'
-									: 'Password first, 6-digit code as the second step. Replies stream in.'}
+									? 'Google, GitHub, Apple 또는 이메일로 로그인하면 Desktop과 CLI에서 이어집니다.'
+									: 'Sign in with Google, GitHub, Apple, or email — then continue in Desktop and CLI.'}
 							</blockquote>
 							<figcaption>
-								<strong>Copix Web</strong>
-								<span>{platform.isKo ? '로그인 세션' : 'Signed-in sessions'}</span>
+								<strong>Account</strong>
+								<span>{platform.isKo ? 'Desktop · CLI' : 'Desktop · CLI'}</span>
 							</figcaption>
 						</figure>
 					</div>
@@ -286,7 +278,7 @@ export default function Landing() {
 				<section className="closing">
 					<h2>{t.closingTitle}</h2>
 					<div className="hero-cta">
-						<Link className="btn primary lg" to={user ? '/app' : '/signup'}>
+						<Link className="btn primary lg" to={user ? '/account' : '/signup'}>
 							{t.cta}
 						</Link>
 						<Link className="btn ghost lg" to="/login">

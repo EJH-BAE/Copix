@@ -20,7 +20,7 @@ export function SiteNav() {
 			<div className="nav-actions">
 				{user ? (
 					<>
-						<Link className="btn ghost" to="/app">Open Copix Web</Link>
+						<Link className="btn ghost" to="/account">Account</Link>
 						<button type="button" className="btn ghost" onClick={logout}>Sign out</button>
 					</>
 				) : (

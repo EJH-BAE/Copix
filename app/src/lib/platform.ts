@@ -74,8 +74,8 @@ export function detectPlatform(
 				: 'OS not detected precisely — pick the matching build on the releases page.';
 
 	const cliHint = isKo
-		? 'CLI는 공개 소스로 배포되지 않습니다. Studio 릴리스와 Copix Web을 이용하세요.'
-		: 'CLI is not published as public source. Use Studio releases or Copix Web.';
+		? '계정을 만든 뒤 Studio 또는 CLI에서 같은 계정으로 로그인하세요.'
+		: 'Create an account, then sign in from Studio or the CLI with the same credentials.';
 
 	return {
 		os,

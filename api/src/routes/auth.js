@@ -74,11 +74,9 @@ auth.post('/signup', async (c) => {
 		ok: true,
 		step: '2fa',
 		email,
-		demo: Boolean(sent.demo),
-		demoCode: sent.demo ? code : undefined,
-		message: sent.demo
-			? 'Dev mode: enter the 6-digit code shown below to finish signup.'
-			: 'Enter the 6-digit code we emailed you to finish creating your account.',
+		message: 'Enter the 6-digit code we emailed you to finish creating your account.',
+		// When SMTP is unset, include code for automated tests only (not shown in UI).
+		...(sent.demo ? { demoCode: code } : {}),
 	});
 });
 
@@ -127,11 +125,8 @@ auth.post('/login', async (c) => {
 		step: '2fa',
 		email,
 		challengeId,
-		demo: Boolean(sent.demo),
-		demoCode: sent.demo ? code : undefined,
-		message: sent.demo
-			? 'Password OK — enter the 6-digit 2FA code shown below.'
-			: 'Password OK — enter the 6-digit code we emailed you.',
+		message: 'Enter the 6-digit code we emailed you.',
+		...(sent.demo ? { demoCode: code } : {}),
 	});
 });
 
@@ -174,9 +169,8 @@ auth.post('/2fa/resend', async (c) => {
 			ok: true,
 			step: '2fa',
 			email,
-			demo: Boolean(sent.demo),
-			demoCode: sent.demo ? code : undefined,
-			message: sent.demo ? 'New signup code (dev preview below).' : 'New signup code sent.',
+			message: 'A new code was sent to your email.',
+			...(sent.demo ? { demoCode: code } : {}),
 		});
 	}
 
@@ -191,18 +185,24 @@ auth.post('/2fa/resend', async (c) => {
 		step: '2fa',
 		email,
 		challengeId,
-		demo: Boolean(sent.demo),
-		demoCode: sent.demo ? code : undefined,
-		message: sent.demo ? 'New 2FA code (dev preview below).' : 'New 2FA code sent.',
+		message: 'A new code was sent to your email.',
+		...(sent.demo ? { demoCode: code } : {}),
 	});
 });
 
 auth.get('/oauth/:provider', async (c) => {
 	const provider = c.req.param('provider');
-	const next = c.req.query('next') || '/app';
+	const next = c.req.query('next') || '/account';
 	const providers = oauthProviders();
 	if (!providers[provider]) {
-		return c.json({ ok: false, error: `${provider} login is not configured` }, 400);
+		return c.html(
+			`<!doctype html><meta charset="utf-8"><title>Copix</title>
+			<body style="font-family:system-ui;padding:40px;max-width:420px;margin:auto">
+			<h1>Sign-in unavailable</h1>
+			<p>${provider} login isn’t ready on this server yet. Use email on the <a href="${env.appUrl}/login">sign-in page</a>.</p>
+			</body>`,
+			503,
+		);
 	}
 	const state = makeState(next);
 	let url = '';
@@ -214,7 +214,7 @@ auth.get('/oauth/:provider', async (c) => {
 
 async function finishOAuth(c, profile, state) {
 	const st = consumeState(state);
-	const next = st?.next || '/app';
+	const next = st?.next || '/account';
 	const user = upsertUser(profile);
 	const token = await signSession(user.id);
 	const dest = new URL(`${env.appUrl}/auth/callback`);

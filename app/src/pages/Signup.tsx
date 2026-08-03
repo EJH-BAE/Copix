@@ -4,7 +4,7 @@ import { useAuth } from '../lib/auth';
 
 export default function Signup() {
 	const { user, loading } = useAuth();
-	if (!loading && user) return <Navigate to="/app" replace />;
+	if (!loading && user) return <Navigate to="/account" replace />;
 	return (
 		<div className="auth-page">
 			<AuthPanel mode="signup" />
