@@ -1,37 +1,53 @@
-# Copix public site
+# Copix public site + web product
 
-Marketing site for https://github.com/EJH-BAE/Copix
+Marketing site, auth UI, and **Copix Web** (logged-in browser agent).
 
 **Live:** https://ejh-bae.github.io/Copix/
 
-Original Copix positioning — local-first desktop agent + matching CLI. Not a Cursor clone.
-
 Copix is **free to use** and **not open source** (proprietary).
+
+## What’s included
+
+| Surface | Path | Notes |
+| --- | --- | --- |
+| Interactive landing | `/` | Cursor-style demo you can type into |
+| Sign up / Sign in | `/signup`, `/login` | Google · GitHub · Apple · email 6-digit code |
+| OAuth return | `/auth/callback` | Stores session JWT |
+| Copix Web | `/app` | Requires login — chats via API → Ollama |
+
+Auth emails use **our** templates in [`api/emails/`](api/emails/) (6-digit codes), not Supabase defaults.
 
 ## Develop
 
 ```bash
-cd app
+# API (auth + agent)
+cd api
+cp .env.example .env
+npm install
+npm run dev
+
+# Site
+cd ../app
+echo 'VITE_API_URL=http://localhost:8787' > .env
 npm install
 npm run dev
 ```
 
-## Build & publish
+Open the Vite URL, click **Sign up**, request a code. With SMTP unset you’ll see a **dev email preview** with the 6-digit code.
+
+## Build (GitHub Pages)
 
 ```bash
 cd app
-GITHUB_PAGES=true npm run build
-cp -f dist/index.html ../index.html
-rm -rf ../assets && cp -R dist/assets ../assets
-# commit on public_site and push
+GITHUB_PAGES=true VITE_API_URL=https://your-api.example.com npm run build
 ```
+
+The `public_site` workflow builds `app/` and deploys `dist/`. Set repository variable `VITE_API_URL` to your deployed API.
 
 ## Screenshots needed (when Bae is awake)
 
-Please drop these into the repo or chat so the hero can use real product art:
-
 1. Copix Studio agents chat (full window, dark)
-2. File tree open on a named project under `~/…`
-3. Terminal / CLI session (`copix>` REPL)
-4. Model picker showing Ollama models
-5. Optional: macOS dock/window chrome for the download section
+2. File tree open on a named project
+3. CLI session with the input rectangle
+4. Model picker
+5. Optional: macOS window chrome

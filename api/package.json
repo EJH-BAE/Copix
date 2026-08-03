@@ -1,0 +1,19 @@
+{
+  "name": "copix-api",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node --watch src/index.js",
+    "start": "node src/index.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@hono/node-server": "^1.14.1",
+    "hono": "^4.7.5",
+    "jose": "^6.0.10",
+    "nodemailer": "^6.10.0"
+  }
+}
