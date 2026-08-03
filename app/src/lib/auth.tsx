@@ -15,9 +15,26 @@ export type CopixUser = {
 	name: string;
 	avatarUrl: string | null;
 	providers: string[];
+	hasPassword?: boolean;
 };
 
-type Providers = { google: boolean; github: boolean; apple: boolean; email: boolean };
+type Providers = {
+	google: boolean;
+	github: boolean;
+	apple: boolean;
+	password: boolean;
+	twoFactor: boolean;
+};
+
+type CredResult = {
+	ok: boolean;
+	step: '2fa';
+	email: string;
+	challengeId?: string;
+	demo?: boolean;
+	demoCode?: string;
+	message: string;
+};
 
 type AuthCtx = {
 	user: CopixUser | null;
@@ -27,8 +44,11 @@ type AuthCtx = {
 	setSession: (token: string, user: CopixUser) => void;
 	logout: () => void;
 	refresh: () => Promise<void>;
-	startEmail: (email: string) => Promise<{ demo?: boolean; demoCode?: string; message: string }>;
-	verifyEmail: (email: string, code: string) => Promise<void>;
+	signup: (email: string, password: string, name?: string) => Promise<CredResult>;
+	login: (email: string, password: string) => Promise<CredResult>;
+	verifySignup: (email: string, code: string) => Promise<void>;
+	verifyLogin: (email: string, code: string, challengeId: string) => Promise<void>;
+	resend2fa: (email: string, purpose: 'signup' | '2fa') => Promise<CredResult>;
 	oauthUrl: (provider: 'google' | 'github' | 'apple', next?: string) => string;
 };
 
@@ -43,7 +63,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 		google: false,
 		github: false,
 		apple: false,
-		email: true,
+		password: true,
+		twoFactor: true,
 	});
 
 	const setSession = useCallback((nextToken: string, nextUser: CopixUser) => {
@@ -80,31 +101,75 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
 	useEffect(() => {
 		apiFetch<Providers>('/auth/providers')
-			.then(setProviders)
-			.catch(() => setProviders({ google: false, github: false, apple: false, email: true }));
+			.then((p) =>
+				setProviders({
+					google: Boolean(p.google),
+					github: Boolean(p.github),
+					apple: Boolean(p.apple),
+					password: p.password !== false,
+					twoFactor: p.twoFactor !== false,
+				}),
+			)
+			.catch(() =>
+				setProviders({
+					google: false,
+					github: false,
+					apple: false,
+					password: true,
+					twoFactor: true,
+				}),
+			);
 		refresh();
 	}, [refresh]);
 
-	const startEmail = useCallback(async (email: string) => {
-		const data = await apiFetch<{
-			ok: boolean;
-			demo?: boolean;
-			demoCode?: string;
-			message: string;
-		}>('/auth/email/start', {
+	const signup = useCallback(async (email: string, password: string, name?: string) => {
+		return apiFetch<CredResult>('/auth/signup', {
 			method: 'POST',
-			body: JSON.stringify({ email }),
+			body: JSON.stringify({ email, password, name }),
 		});
-		return data;
 	}, []);
 
-	const verifyEmail = useCallback(async (email: string, code: string) => {
-		const data = await apiFetch<{ ok: boolean; token: string; user: CopixUser }>('/auth/email/verify', {
+	const login = useCallback(async (email: string, password: string) => {
+		return apiFetch<CredResult>('/auth/login', {
 			method: 'POST',
-			body: JSON.stringify({ email, code }),
+			body: JSON.stringify({ email, password }),
 		});
-		setSession(data.token, data.user);
-	}, [setSession]);
+	}, []);
+
+	const verifySignup = useCallback(
+		async (email: string, code: string) => {
+			const data = await apiFetch<{ ok: boolean; token: string; user: CopixUser }>(
+				'/auth/signup/verify',
+				{
+					method: 'POST',
+					body: JSON.stringify({ email, code }),
+				},
+			);
+			setSession(data.token, data.user);
+		},
+		[setSession],
+	);
+
+	const verifyLogin = useCallback(
+		async (email: string, code: string, challengeId: string) => {
+			const data = await apiFetch<{ ok: boolean; token: string; user: CopixUser }>(
+				'/auth/login/verify',
+				{
+					method: 'POST',
+					body: JSON.stringify({ email, code, challengeId }),
+				},
+			);
+			setSession(data.token, data.user);
+		},
+		[setSession],
+	);
+
+	const resend2fa = useCallback(async (email: string, purpose: 'signup' | '2fa') => {
+		return apiFetch<CredResult>('/auth/2fa/resend', {
+			method: 'POST',
+			body: JSON.stringify({ email, purpose }),
+		});
+	}, []);
 
 	const oauthUrl = useCallback((provider: 'google' | 'github' | 'apple', next = '/app') => {
 		return `${apiBase()}/auth/oauth/${provider}?next=${encodeURIComponent(next)}`;
@@ -119,11 +184,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 			setSession,
 			logout,
 			refresh,
-			startEmail,
-			verifyEmail,
+			signup,
+			login,
+			verifySignup,
+			verifyLogin,
+			resend2fa,
 			oauthUrl,
 		}),
-		[user, token, loading, providers, setSession, logout, refresh, startEmail, verifyEmail, oauthUrl],
+		[
+			user,
+			token,
+			loading,
+			providers,
+			setSession,
+			logout,
+			refresh,
+			signup,
+			login,
+			verifySignup,
+			verifyLogin,
+			resend2fa,
+			oauthUrl,
+		],
 	);
 
 	return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
