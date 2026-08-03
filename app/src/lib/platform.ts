@@ -19,8 +19,8 @@ const GITHUB = 'https://github.com/EJH-BAE/Copix';
 const RELEASES = `${GITHUB}/releases`;
 const MAC_DMG = `${GITHUB}/releases/download/v4.3.0/Copix-4.3.0-macOS-arm64.dmg`;
 const WIN_EXE = `${GITHUB}/releases/download/v4.3.0/Copix-4.3.0-Windows-x64.exe`;
-const CLI_SH = 'curl -fsSL https://raw.githubusercontent.com/EJH-BAE/Copix/main/cli/install.sh | bash';
-const CLI_PS = 'irm https://raw.githubusercontent.com/EJH-BAE/Copix/main/cli/install.ps1 | iex';
+const CLI_SH = 'curl -fsSL https://raw.githubusercontent.com/EJH-BAE/Copix/refs/heads/main/cli/install.sh | bash';
+const CLI_PS = 'irm https://raw.githubusercontent.com/EJH-BAE/Copix/refs/heads/main/cli/install.ps1 | iex';
 
 export function detectPlatform(
 	ua = typeof navigator !== 'undefined' ? navigator.userAgent : '',
