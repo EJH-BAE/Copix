@@ -1,11 +1,11 @@
 <p align="center">
-<img width="150" height="150" alt="copix_icon" src="macOS/studio/build/icon.png" />
+<img width="120" height="120" alt="Copix" src="icon.png" />
 </p>
 
 <h1 align="center">Copix</h1>
 <p align="center">
 	<strong>Fast. Efficient. Precise.</strong><br/>
-	Turn anything you want into real, high-quality code.
+	Your coding agent for ambitious software.
 </p>
 
 <p align="center">
@@ -17,73 +17,25 @@
 
 ---
 
-## Platforms
+**Copix is free to use and not open source.**  
+This repository does **not** publish Copix product source code.
 
-| Folder | Platform | Build |
-| :-- | :-- | :-- |
-| [`macOS/`](macOS/) | macOS (Apple Silicon / Intel) | `cd macOS && ./tools/build-mac.sh` |
-| [`Windows/`](Windows/) | Windows x64 | `cd Windows/studio && powershell -ExecutionPolicy Bypass -File .\scripts\build-windows-installer.ps1` |
-| [`cli/`](cli/) | Terminal (Node 18+) | `curl -fsSL https://raw.githubusercontent.com/EJH-BAE/Copix/main/cli/install.sh \| bash` |
+## Get Copix
 
-### Terminal (`cli/`)
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/EJH-BAE/Copix/main/cli/install.sh | bash
-copix
-copix "summarize this repo"
-```
-
-See [cli/README.md](cli/README.md). Synced with Desktop — same agent loop, tools (`create_project`, `edit_file`, `terminal`, `web_search`, `web_fetch`, …), and `~/Copix/settings.json`.
-
-**Site:** https://ejh-bae.github.io/Copix/ (`public_site` branch)
-
-### macOS (`/Users/{username}`)
-See [macOS/README.md](macOS/README.md). Output: `macOS/studio/release/Copix-*-mac-*.dmg`
-
-### Windows
-See [Windows/README.md](Windows/README.md). Output: `Windows/studio/release/Copix-Setup-*-x64.exe`
-
-## Settings (`~/Copix/settings.json`)
-
-Copix has **no accounts** and **no in-app settings screen**. Preferences are stored locally in:
-
-| OS | Path |
+| Surface | Where |
 | :-- | :-- |
-| macOS | `/Users/<you>/Copix/settings.json` (e.g. `/Users/{username}/Copix/settings.json`) |
-| Windows | `C:\Users\<you>\Copix\settings.json` |
+| **Website + Copix Web** | [ejh-bae.github.io/Copix](https://ejh-bae.github.io/Copix/) |
+| **Desktop (macOS / Windows)** | [GitHub Releases](https://github.com/EJH-BAE/Copix/releases) |
+| **CLI** | Install from the [website](https://ejh-bae.github.io/Copix/#install) (OS-aware) |
 
-The app creates the `Copix` folder and file on first launch. Edit `settings.json` directly, then restart Copix to apply changes.
+## Product
 
-Example:
+- **Desktop** — Copix Studio for macOS and Windows  
+- **CLI** — same agent in the terminal  
+- **Copix Web** — signed-in browser agent (password + 6-digit 2FA)
 
-```json
-{
-  "model": {
-    "provider": "ollama",
-    "modelId": "qwen2.5:3b",
-    "lowVram": false
-  },
-  "layout": { "sidebarWidth": 220, "editorWidth": 420 },
-  "workspace": { "homeDirectory": "/Users/{username}" },
-  "theme": "system",
-  "agentMode": "code"
-}
-```
+Local models via [Ollama](https://ollama.com). Preferences live in `~/Copix/settings.json` on your machine.
 
-| Key | What it controls |
-| :-- | :-- |
-| `model.provider` | `ollama` (default — local models) |
-| `model.modelId` | Ollama model tag (default `qwen2.5:3b`) |
-| `model.lowVram` | Smaller context for low-memory machines |
-| `workspace.homeDirectory` | Default agent workspace / where new projects are created (defaults to `/Users/<you>` or `C:\\Users\\<you>`) |
-| `theme` | `system` \| `dark` \| `light` |
-| `agentMode` | Default agent mode (`plan`, `code`, `debug`, `terminal`) |
-| `layout` | Sidebar / editor panel widths |
+## License
 
-Prefer editing **~/Copix/settings.json** directly; there is no settings menu in the app.
-
-## License & Copyright
-
-Copix is **free to use** and **not open source**. GitHub is used for development and deployment only — see [LICENSE.txt](LICENSE.txt).
-
-Portions may include third-party components (for example Code-OSS) under their own licenses.
+See [LICENSE.txt](LICENSE.txt). Copix is proprietary. You may use the product; you may not redistribute source or relicense it as open source.
