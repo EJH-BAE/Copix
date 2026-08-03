@@ -184,13 +184,32 @@ export default function Landing() {
 						</div>
 					</div>
 					<div>
-						<h3>{platform.isKo ? 'Desktop이란?' : 'What is Desktop?'}</h3>
+						<h3>
+							{platform.isKo
+								? 'macOS: “손상되어서 열 수 없습니다”'
+								: 'macOS: “damaged and can’t be opened”'}
+						</h3>
 						<p className="install-hint">
 							{platform.isKo
-								? '네이티브 Studio 앱 — 전체 도구 표면과 에이전트 사이드바. CLI와 ~/Copix를 공유합니다.'
-								: 'Native Studio app — full tool surface and agent sidebar. Shares ~/Copix with the CLI.'}
+								? '파일이 깨진 것이 아닙니다. Chrome 다운로드 후 Gatekeeper 격리입니다. Applications로 옮긴 뒤 터미널에서:'
+								: 'The DMG is fine (checksum matches). Chrome quarantine blocks unsigned apps. After dragging to Applications, run:'}
 						</p>
-						<pre className="install"><code>{platform.desktopUrl}</code></pre>
+						<pre className="install"><code>{`xattr -cr /Applications/Copix.app
+open /Applications/Copix.app`}</code></pre>
+						<div className="install-actions">
+							<button
+								type="button"
+								className="btn ghost"
+								onClick={() =>
+									void copyText(
+										'xattr -cr /Applications/Copix.app && open /Applications/Copix.app',
+										'desktop',
+									)
+								}
+							>
+								{copied === 'desktop' ? t.copied : platform.isKo ? '명령 복사' : 'Copy command'}
+							</button>
+						</div>
 					</div>
 				</section>
 

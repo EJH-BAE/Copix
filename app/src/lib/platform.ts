@@ -66,12 +66,12 @@ export function detectPlatform(
 
 	const desktopHint = isKo
 		? os === 'mac'
-			? '감지됨: macOS — DMG를 열고 Applications로 드래그하세요.'
+			? '감지됨: macOS — DMG → Applications. “손상됨”이면: xattr -cr /Applications/Copix.app && open /Applications/Copix.app'
 			: os === 'windows'
 				? '감지됨: Windows — EXE 설치 파일을 실행하세요.'
 				: '릴리스 페이지에서 맞는 Studio 빌드를 고르세요.'
 		: os === 'mac'
-			? 'Detected macOS — open the DMG and drag Studio into Applications.'
+			? 'Detected macOS — open the DMG and drag into Applications. If “damaged”: xattr -cr /Applications/Copix.app && open /Applications/Copix.app'
 			: os === 'windows'
 				? 'Detected Windows — run the EXE installer from the release.'
 				: 'Pick the matching Studio build on the releases page.';
