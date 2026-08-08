@@ -17,34 +17,23 @@
 </p>
 
 ---
+Desktop and CLI run locally with [Ollama](https://ollama.com).
 
-**Copix is free to use and not open source.**  
-No accounts. Desktop and CLI run locally with [Ollama](https://ollama.com).
+## What is Copix?
+Copix is an Ollama-based local agent.
+Instead of high-price models like gpt-oss, Copix uses faster Ollama models, such as `qwen2.5:3b`.
 
-## Get Copix v4.3.0
-
-| Surface | Install |
-| :-- | :-- |
-| **Website** | [ejh-bae.github.io/Copix](https://ejh-bae.github.io/Copix/) |
-| **Desktop installers** | [`release/`](release/) · [GitHub Release v4.3.0](https://github.com/EJH-BAE/Copix/releases/tag/v4.3.0) |
-| **macOS Desktop** | [`release/Copix-4.3.0-macOS-arm64.dmg`](release/Copix-4.3.0-macOS-arm64.dmg) |
-| **Windows Desktop** | [`release/Copix-4.3.0-Windows-x64.exe`](release/Copix-4.3.0-Windows-x64.exe) |
-| **CLI (macOS / Linux)** | `curl -fsSL https://raw.githubusercontent.com/EJH-BAE/Copix/refs/heads/main/cli/install.sh \| bash` |
-| **CLI (Windows)** | `irm https://raw.githubusercontent.com/EJH-BAE/Copix/refs/heads/main/cli/install.ps1 \| iex` |
-
-```bash
-ollama pull qwen2.5:3b
-copix doctor
-copix
+## How does Copix work?
+Copix starts working when the prompt is messaged to Ollama.
+Copix works like this:
+```mermaid
+flowchart TD
+P[Prompt Handling (Ollama)] --> W[Work (Ollama)]
+W --> |Files| F[Reading, Editing, Creating, Listing]
+W --> |Thoughts| T[Reasoning]
+F --> O[Output in JSON]
+T --> O[Output in JSON]
 ```
-
-## Product
-
-- **Desktop** — Copix Studio for macOS and Windows  
-- **CLI** — same agent in the terminal (creates/edits files for you; no account)  
-- **Local models** — Ollama-first; preferences in `~/Copix/settings.json`
-
-See [cli/README.md](cli/README.md) and [release/README.md](release/README.md).
 
 ## License
 
