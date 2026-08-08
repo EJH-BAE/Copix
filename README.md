@@ -26,18 +26,18 @@ Instead of high-price models like gpt-oss, Copix uses faster Ollama models, such
 ## How Copix works
 Copix starts working when the prompt is messaged to Ollama.
 Copix works like this:
+
 ```mermaid
 flowchart TD
-    P[Prompt Handling - Ollama] --> W[Work - Ollama]
-    W -->|Files| F[Reading, Editing, Creating, Listing]
-    W -->|Thoughts| T[Reasoning]
-    W -->|Commands| TER[Terminal]
-    F --> O[Output in JSON]
+    P["Prompt Handling - Ollama"] --> W["Work - Ollama"]
+    W --> |Files| F["Reading, Editing, Creating, Listing"]
+    W --> |Thoughts| T["Reasoning"]
+    W --> |Commands| TER["Terminal"]
+    F --> O["Output in JSON"]
     T --> O
     TER --> O
-    O --> S[Summary - Ollama]
+    O --> S["Summary - Ollama"]
 ```
-
 
 ## Why Copix?
 Defualt Ollama app doesn't have any functions like creating or reading files.
