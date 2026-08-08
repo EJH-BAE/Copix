@@ -19,21 +19,46 @@
 ---
 Desktop and CLI run locally with [Ollama](https://ollama.com).
 
-## What is Copix?
+## Introduction
 Copix is an Ollama-based local agent.
 Instead of high-price models like gpt-oss, Copix uses faster Ollama models, such as `qwen2.5:3b`.
 
-## How does Copix work?
+## How Copix works
 Copix starts working when the prompt is messaged to Ollama.
 Copix works like this:
 ```mermaid
 flowchart TD
-P[Prompt Handling (Ollama)] --> W[Work (Ollama)]
-W --> |Files| F[Reading, Editing, Creating, Listing]
-W --> |Thoughts| T[Reasoning]
-F --> O[Output in JSON]
-T --> O[Output in JSON]
+    P[Prompt Handling - Ollama] --> W[Work - Ollama]
+    W -->|Files| F[Reading, Editing, Creating, Listing]
+    W -->|Thoughts| T[Reasoning]
+    W -->|Commands| TER[Terminal]
+    F --> O[Output in JSON]
+    T --> O
+    TER --> O
+    O --> S[Summary - Ollama]
 ```
+
+
+## Why Copix?
+Defualt Ollama app doesn't have any functions like creating or reading files.
+Copix is an advanced agent that maximizes the aspects of Ollama.
+
+Comparison between the two:
+
+| Functions | Defualt Ollama | Copix | 
+| :-- | :--: | :--: |
+| Command tools | ❌ | ✅ |
+| File creation | ❌ | ✅ |
+| File reading | ❌ | ✅ |
+| JSON output | ❌ | ✅ |
+| Web search | ✅ | ✅ |
+| Dynamic UI | ✅ | ✅ |
+| CLI | ✅ | ✅ | 
+
+## Settings
+Copix's outputs are all created with `JSON`.
+
+
 
 ## License
 
