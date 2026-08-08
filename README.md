@@ -24,20 +24,18 @@ Copix is an Ollama-based local agent.
 Instead of high-price models like gpt-oss, Copix uses faster Ollama models, such as `qwen2.5:3b`.
 
 ## How Copix works
-Copix starts working when the prompt is messaged to Ollama.
+Copix starts working in various ways when the prompt is messaged to Ollama.<br/>
 Copix works like this:
+<p align="center">
+<img width="375" height="280" alt="image" src="https://github.com/user-attachments/assets/57ad16e4-ed4d-4a64-8309-0cdea7024752" />
+</p>
 
-```mermaid
-flowchart TD
-    P["Prompt Handling - Ollama"] --> W["Work - Ollama"]
-    W --> |Files| F["Reading, Editing, Creating, Listing"]
-    W --> |Thoughts| T["Reasoning"]
-    W --> |Commands| TER["Terminal"]
-    F --> O["Output in JSON"]
-    T --> O
-    TER --> O
-    O --> S["Summary - Ollama"]
-```
+- **The user** inputs the prompt.
+- **Ollama** receives the user prompt and plans how the work should be initialized.
+- **Ollama** uses *Copix tools* to create, read, and manage files.
+- **Ollama** puts an output while working in JSON.
+- **Copix** summarizes the work done by Ollama.
+
 
 ## Why Copix?
 Defualt Ollama app doesn't have any functions like creating or reading files.
@@ -57,7 +55,51 @@ Comparison between the two:
 
 ## Settings
 Copix's outputs are all created with `JSON`.
+Example:
 
+```json
+{
+  "model": {
+    "provider": "ollama",
+    "apiKey": "",
+    "selection": "manual",
+    "modelId": "qwen2.5-coder:7b"
+  },
+  "layout": {
+    "sidebarWidth": 220,
+    "editorWidth": 420
+  },
+  "workspace": {
+    "homeDirectory": ""
+  },
+  "theme": "dark",
+  "agentMode": "code",
+  "activeAccountId": "default",
+  "accounts": [
+    {
+      "id": "default",
+      "displayName": "Local user",
+      "createdAt": 1785154776653
+    }
+  ],
+  "auth": {
+    "provider": "local",
+    "supabaseUrl": "",
+    "supabaseAnonKey": ""
+  },
+  "subscription": {
+    "plan": "free",
+    "status": "inactive"
+  },
+  "systemPrompt": {
+    "customRules": []
+  },
+  "modelSetup": {
+    "completed": false,
+    "skipped": true
+  }
+}
+```
 
 
 ## License
