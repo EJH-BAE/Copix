@@ -7,6 +7,7 @@
 	<strong>Fast. Efficient. Precise.</strong><br/>
 	Your agent to maximize Ollama usability.
 </p>
+<p align="center"><strong>Write, edit, delete, read files and create projects just with a sentence.</strong></p>
 
 <p align="center">
 <img src="https://img.shields.io/badge/License-MIT-green.svg" alt="License: MIT">
@@ -19,7 +20,10 @@
 ---
 <img width="1469" height="821" alt="image" src="https://github.com/user-attachments/assets/477b3b09-d5a5-4812-8f18-bdc795a25ff6" />
 
-> A local agent designed to maximize the usability of Ollama models.
+---
+
+<p align="center"><strong><a href="https://github.com/EJH-BAE/Copix/blob/main/demo.mov">Watch Demo (.mov)</strong>
+
 
 ## Introduction
 Copix is a local agent operating directly on your system.
@@ -37,6 +41,21 @@ Copix works like this:
 - **Ollama** uses *Copix tools* to create, read, and manage files.
 - **Ollama** puts an output while working in JSON.
 - **Copix** summarizes the work done by Ollama.
+
+## Tools
+- `create_project`
+- `multitask`
+- `read_file`
+- `edit_file`
+- `write_file`
+- `append_file`
+- `delete_file`
+- `grep`
+- `list_dir`
+- `web_search`
+- `web_fetch`
+- `terminal`
+- `spawn_subagent`
 
 ## Build
 
