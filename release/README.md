@@ -1,6 +1,6 @@
 # Copix releases
 
-Installers for **Copix Desktop** (macOS + Windows). Copix is free to use and proprietary.
+Installers for **Copix Desktop** (macOS + Windows). Copix is open source under the MIT License.
 
 | File | Platform | Notes |
 | --- | --- | --- |

@@ -1,15 +1,15 @@
 <p align="center">
-<img width="120" height="120" alt="Copix" src="icon.png" />
+<img width="125" height="118" alt="image" src="https://github.com/user-attachments/assets/957dde62-5029-4c5a-ac62-124ebe9c577c" />
 </p>
 
 <h1 align="center">Copix</h1>
 <p align="center">
 	<strong>Fast. Efficient. Precise.</strong><br/>
-	Your coding agent for ambitious software.
+	Your agent to maximize Ollama usability.
 </p>
 
 <p align="center">
-<img src="https://img.shields.io/badge/License-Proprietary-lightgrey.svg" alt="License: Proprietary">
+<img src="https://img.shields.io/badge/License-MIT-green.svg" alt="License: MIT">
 <img src="https://img.shields.io/badge/Price-Free-brightgreen.svg" alt="Free">
 <img src="https://img.shields.io/badge/Version-4.3.0-blue.svg" alt="v4.3.0">
 <img src="https://img.shields.io/badge/macOS-supported-blue.svg" alt="macOS">
@@ -17,10 +17,12 @@
 </p>
 
 ---
-Desktop and CLI run locally with [Ollama](https://ollama.com).
+<img width="1469" height="821" alt="image" src="https://github.com/user-attachments/assets/477b3b09-d5a5-4812-8f18-bdc795a25ff6" />
+
+> A local agent designed to maximize the usability of Ollama models.
 
 ## Introduction
-Copix is an Ollama-based local agent.
+Copix is a local agent operating directly on your system.
 Instead of high-price models like gpt-oss, Copix uses faster Ollama models, such as `qwen2.5:3b`.
 
 ## How Copix works
@@ -36,14 +38,61 @@ Copix works like this:
 - **Ollama** puts an output while working in JSON.
 - **Copix** summarizes the work done by Ollama.
 
+## Build
+
+### CLI
+
+Requires [Node.js 18+](https://nodejs.org) and `git`.
+
+```bash
+git clone https://github.com/EJH-BAE/Copix.git
+cd Copix/cli
+npm install
+npm start
+```
+
+One-shot install (macOS / Linux):
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/EJH-BAE/Copix/refs/heads/main/cli/install.sh | bash
+```
+
+Windows (PowerShell):
+
+```powershell
+irm https://raw.githubusercontent.com/EJH-BAE/Copix/refs/heads/main/cli/install.ps1 | iex
+```
+
+Then:
+
+```bash
+ollama pull qwen2.5:3b
+copix doctor
+copix
+```
+
+### Desktop
+
+Prebuilt installers are in [`release/`](release/) and on [GitHub Releases](https://github.com/EJH-BAE/Copix/releases/tag/v4.3.0).
+
+## Programs
+Copix has a **CLI** version and a **Desktop** version. <br/>
+
+### CLI
+---
+<img width="863" height="469" alt="image" src="https://github.com/user-attachments/assets/b64d25ad-39e8-4ad1-9081-3eba91c7e938" />
+
+### Desktop
+---
+<img width="1469" height="821" alt="image" src="https://github.com/user-attachments/assets/477b3b09-d5a5-4812-8f18-bdc795a25ff6" />
 
 ## Why Copix?
-Defualt Ollama app doesn't have any functions like creating or reading files.
+Default Ollama app doesn't have any functions like creating or reading files.
 Copix is an advanced agent that maximizes the aspects of Ollama.
 
 Comparison between the two:
 
-| Functions | Defualt Ollama | Copix | 
+| Functions | Default Ollama | Copix | 
 | :-- | :--: | :--: |
 | Command tools | ❌ | ✅ |
 | File creation | ❌ | ✅ |
@@ -55,53 +104,25 @@ Comparison between the two:
 
 ## Settings
 Copix's outputs are all created with `JSON`.
-Example:
+
+| Settings | Default |
+| :-- | :-- |
+| Model provider (model.provider) | Ollama (locked to Ollama) |
+| Model ID (model.modelID) | `qwen2.5:3b` (`qwen2.5-coder:7b`, `qwen3.5:4b` is also available) |
+| Workspace (workspace.homeDirectory) | "/Users/{username}" (can change based on user settings) |
 
 ```json
 {
   "model": {
     "provider": "ollama",
-    "apiKey": "",
-    "selection": "manual",
-    "modelId": "qwen2.5-coder:7b"
-  },
-  "layout": {
-    "sidebarWidth": 220,
-    "editorWidth": 420
+    "modelId": "qwen2.5:3b"
   },
   "workspace": {
-    "homeDirectory": ""
-  },
-  "theme": "dark",
-  "agentMode": "code",
-  "activeAccountId": "default",
-  "accounts": [
-    {
-      "id": "default",
-      "displayName": "Local user",
-      "createdAt": 1785154776653
-    }
-  ],
-  "auth": {
-    "provider": "local",
-    "supabaseUrl": "",
-    "supabaseAnonKey": ""
-  },
-  "subscription": {
-    "plan": "free",
-    "status": "inactive"
-  },
-  "systemPrompt": {
-    "customRules": []
-  },
-  "modelSetup": {
-    "completed": false,
-    "skipped": true
+    "homeDirectory": "/Users/{username}"
   }
 }
 ```
 
-
 ## License
 
-See [LICENSE.txt](LICENSE.txt). Copix is proprietary. You may use the product; you may not redistribute source or relicense it as open source.
+See [LICENSE.txt](LICENSE.txt). Copix is open source under the MIT License.
