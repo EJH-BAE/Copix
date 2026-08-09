@@ -142,6 +142,12 @@ Copix's outputs are all created with `JSON`.
 }
 ```
 
+## Installation
+
+Get the latest installers for your OS [here](https://github.com/EJH-BAE/Copix/releases/latest).
+For older versions, try looking at [Releases](https://github.com/EJH-BAE/Copix/releases).
+
+
 ## License
 
 See [LICENSE.txt](LICENSE.txt). Copix is open source under the MIT License.
