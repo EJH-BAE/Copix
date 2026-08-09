@@ -126,3 +126,7 @@ Copix's outputs are all created with `JSON`.
 ## License
 
 See [LICENSE.txt](LICENSE.txt). Copix is open source under the MIT License.
+
+## Links
+- [Ollama](https://ollama.com)
+- [Copix](https://ejh-bae.github.io/Copix/)
