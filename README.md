@@ -8,7 +8,7 @@ Marketing site for **Copix Desktop** and **Copix CLI**.
 - Desktop installers from [Releases](https://github.com/EJH-BAE/Copix/releases)  
 - Standalone CLI via `curl | bash` (macOS/Linux) and `irm | iex` (Windows) — see `main` branch `cli/`
 
-Copix is **free to use** and **not open source** (proprietary).
+Copix is **open source** under the [MIT License](https://github.com/EJH-BAE/Copix/blob/main/LICENSE.txt).
 
 ## Develop
 

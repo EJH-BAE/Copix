@@ -328,11 +328,11 @@ copix "summarize this repo"`}</code></pre>
 							</a>
 						</article>
 						<article>
-							<h3>{platform.isKo ? '소유권' : 'Proprietary'}</h3>
+							<h3>{platform.isKo ? '오픈소스' : 'Open source'}</h3>
 							<p>
 								{platform.isKo
-									? '무료로 쓰세요. 오픈소스가 아닙니다.'
-									: 'Free to use. Not open source.'}
+									? 'MIT 라이선스. 자유롭게 쓰고, 고치고, 공유하세요.'
+									: 'MIT licensed. Use, modify, and share freely.'}
 							</p>
 						</article>
 					</div>
@@ -382,7 +382,7 @@ copix "summarize this repo"`}</code></pre>
 					<a href={GITHUB}>GitHub</a>
 				</div>
 				<p className="footer-copy">
-					© {new Date().getFullYear()} Copix. Free to use · proprietary · not open source · no accounts.
+					© {new Date().getFullYear()} Copix. Open source (MIT) · free to use · no accounts.
 				</p>
 			</footer>
 		</div>
